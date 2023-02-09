@@ -1,32 +1,28 @@
 package fr.sercurio.soulseek.client
 
-import java.io.DataInputStream
-import java.io.InputStream
-import java.io.OutputStream
-import java.net.InetSocketAddress
-import java.net.Socket
-import java.util.concurrent.Executors
+import io.ktor.network.selector.*
+import io.ktor.network.sockets.*
+import io.ktor.utils.io.*
+import kotlinx.coroutines.Dispatchers
 
 
 abstract class SoulSocket(
     private val host: String, private val port: Int
-) : Runnable {
+) {
     private val tag = SoulSocket::class.java.name
 
-    private val executorService = Executors.newSingleThreadExecutor()
-
     lateinit var soulInput: SoulInputStream
-    private lateinit var output: OutputStream
+    private lateinit var writeChannel: ByteWriteChannel
 
     var connected = false
 
-    override fun run() {
-        val socket = Socket()
+    suspend fun run() {
         try {
-            socket.connect(InetSocketAddress(host, port), 1000)
-            val mIn: InputStream = socket.getInputStream()
-            output = socket.getOutputStream()
-            soulInput = SoulInputStream(DataInputStream(mIn))
+            val selectorManager = SelectorManager(Dispatchers.IO)
+            val socket = aSocket(selectorManager).tcp().connect(host, port)
+            val readChannel = socket.openReadChannel()
+            writeChannel = socket.openWriteChannel()
+            soulInput = SoulInputStream(readChannel)
 
             onSocketConnected()
             connected = true
@@ -44,23 +40,19 @@ abstract class SoulSocket(
             onSocketDisconnected()
         } finally {
             connected = false
-            socket.close()
         }
-
     }
 
-    fun sendMessage(message: ByteArray) {
-        executorService.submit {
-            output.write(message)
-            output.flush()
-        }
+    suspend fun sendMessage(message: ByteArray) {
+        writeChannel.write { it.put(message) }
+        writeChannel.flush()
     }
 
     fun stop() {
         connected = false
     }
 
-    abstract fun onSocketConnected()
+    abstract suspend fun onSocketConnected()
     abstract fun onSocketDisconnected()
     abstract fun onMessageReceived()
 }

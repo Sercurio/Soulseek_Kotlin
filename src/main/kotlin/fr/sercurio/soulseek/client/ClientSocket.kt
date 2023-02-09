@@ -19,11 +19,7 @@ import java.util.zip.InflaterInputStream
 class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.port) {
     private val askedFiles = mutableMapOf<String, SoulFile>()
 
-    init {
-        Thread(this).start()
-    }
-
-    override fun onSocketConnected() {
+    override suspend fun onSocketConnected() {
         println("Connected to $peer")
 
         pierceFirewall(peer.token)
@@ -50,9 +46,9 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
 
                 when (code) {
                     4 -> receiveSharesRequest()
-                    5 -> receiveSharesReply()
+                    //5 -> receiveSharesReply()
                     8 -> receiveSearchRequest()
-                    9 -> receiveSearchReply()
+                    //9 -> receiveSearchReply()
                     15 -> receiveInfoRequest()
                     16 -> receiveInfoReply()
                     36 -> receiveFolderContentsRequest()
@@ -114,48 +110,48 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
         //sendSharesReply()
     }
 
-
-    private fun receiveSharesReply() {
-        val inflatedInputStream = DataInputStream(InflaterInputStream(soulInput.dis))
-        println("Loading " + this.peer.username + " shares.")
-        val nDirs = soulInput.readInt(inflatedInputStream)
-        //val hashMap: HashMap<String?, ShareDirectory?> = HashMap<Any?, Any?>(nDirs)
-        println("Loading $nDirs folders.")
-        for (i in 0 until nDirs) {
-            val dirName = soulInput.readString(inflatedInputStream)
-            /*val parent: ShareDirectory? = hashMap[Util.getFolderPath(dirName)] as ShareDirectory?
-            val currentDir = ShareDirectory(dirName, parent)
-            hashMap[dirName] = currentDir
-            if (parent == null) {
-                this.service.rootShare.put(this.peerName, currentDir)
-            }*/
-            val nFiles = soulInput.readInt(inflatedInputStream)
-            for (j in 0 until nFiles) {
-                soulInput.readByte(inflatedInputStream)
-                val filename = soulInput.readString(inflatedInputStream)
-                val fileSize = soulInput.readLong(inflatedInputStream)
-                soulInput.readString(inflatedInputStream)
-                val nAttributes = soulInput.readInt(inflatedInputStream)
-                var bitrate = 0
-                var length = 0
-                var vbr = 0
-                for (k in 0 until nAttributes) {
-                    when (soulInput.readInt(inflatedInputStream)) {
-                        0 -> bitrate = soulInput.readInt(inflatedInputStream)
-                        1 -> length = soulInput.readInt(inflatedInputStream)
-                        2 -> vbr = soulInput.readInt(inflatedInputStream)
-                        else -> soulInput.readInt(inflatedInputStream)
+    /*
+        private fun receiveSharesReply() {
+            val inflatedInputStream = DataInputStream(InflaterInputStream(soulInput.readChannel))
+            println("Loading " + this.peer.username + " shares.")
+            val nDirs = soulInput.readInt(inflatedInputStream)
+            //val hashMap: HashMap<String?, ShareDirectory?> = HashMap<Any?, Any?>(nDirs)
+            println("Loading $nDirs folders.")
+            for (i in 0 until nDirs) {
+                val dirName = soulInput.readString(inflatedInputStream)
+                /*val parent: ShareDirectory? = hashMap[Util.getFolderPath(dirName)] as ShareDirectory?
+                val currentDir = ShareDirectory(dirName, parent)
+                hashMap[dirName] = currentDir
+                if (parent == null) {
+                    this.service.rootShare.put(this.peerName, currentDir)
+                }*/
+                val nFiles = soulInput.readInt(inflatedInputStream)
+                for (j in 0 until nFiles) {
+                    soulInput.readByte(inflatedInputStream)
+                    val filename = soulInput.readString(inflatedInputStream)
+                    val fileSize = soulInput.readLong(inflatedInputStream)
+                    soulInput.readString(inflatedInputStream)
+                    val nAttributes = soulInput.readInt(inflatedInputStream)
+                    var bitrate = 0
+                    var length = 0
+                    var vbr = 0
+                    for (k in 0 until nAttributes) {
+                        when (soulInput.readInt(inflatedInputStream)) {
+                            0 -> bitrate = soulInput.readInt(inflatedInputStream)
+                            1 -> length = soulInput.readInt(inflatedInputStream)
+                            2 -> vbr = soulInput.readInt(inflatedInputStream)
+                            else -> soulInput.readInt(inflatedInputStream)
+                        }
                     }
+                    //val shareFile = ShareFile(currentDir, filename, filesize, bitrate, length, vbr)
+                    println("decodeFiles: $dirName, $filename")
                 }
-                //val shareFile = ShareFile(currentDir, filename, filesize, bitrate, length, vbr)
-                println("decodeFiles: $dirName, $filename")
             }
+            println("Finished Loading " + this.peer.username + " shares.")
         }
-        println("Finished Loading " + this.peer.username + " shares.")
-    }
+    */
 
-
-    private fun receiveSearchRequest() {
+    private suspend fun receiveSearchRequest() {
         val ticket = soulInput.readInt()
         val query = soulInput.readString()
         /*val cursor: Cursor = GoSeekData.searchShares(query)
@@ -164,85 +160,85 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
         }*/
     }
 
+    /*
+        private suspend fun receiveSearchReply() {
+            val soulFiles = arrayListOf<SoulFile>()
 
-    private suspend fun receiveSearchReply() {
-        val soulFiles = arrayListOf<SoulFile>()
+            val inflatedInputStream = DataInputStream(InflaterInputStream(soulInput.readChannel))
 
-        val inflatedInputStream = DataInputStream(InflaterInputStream(soulInput.dis))
-
-        val user = soulInput.readString(inflatedInputStream)
-        val ticket = soulInput.readInt(inflatedInputStream)
-        var path = ""
-        var size: Long
-        var extension = ""
-        var bitrate = 0
-        var duration = 0
-        var vbr = 0
-        val slotsFree: Boolean
-        val avgSpeed: Int
-        val queueLength: Long
-        if (true /*TODO search the ticket*/) {
-            val nResults = soulInput.readInt(inflatedInputStream)
-            for (i in 0 until nResults) {
-                soulInput.readBoolean(inflatedInputStream) //unused
-                path = soulInput.readString(inflatedInputStream).replace("\\", "/")
-                size = soulInput.readLong(inflatedInputStream)
-                extension = soulInput.readString(inflatedInputStream)
-                val nAttr = soulInput.readInt(inflatedInputStream)
-                for (j in 0 until nAttr) {
-                    when (val posAttr = soulInput.readInt(inflatedInputStream)) {
-                        0 -> bitrate = soulInput.readInt(inflatedInputStream)
-                        1 -> duration = soulInput.readInt(inflatedInputStream)
-                        2 -> vbr = soulInput.readInt(inflatedInputStream)
-                        else -> soulInput.readInt(inflatedInputStream)
+            val user = soulInput.readString(inflatedInputStream)
+            val ticket = soulInput.readInt(inflatedInputStream)
+            var path = ""
+            var size: Long
+            var extension = ""
+            var bitrate = 0
+            var duration = 0
+            var vbr = 0
+            val slotsFree: Boolean
+            val avgSpeed: Int
+            val queueLength: Long
+            if (true /*TODO search the ticket*/) {
+                val nResults = soulInput.readInt(inflatedInputStream)
+                for (i in 0 until nResults) {
+                    soulInput.readBoolean(inflatedInputStream) //unused
+                    path = soulInput.readString(inflatedInputStream).replace("\\", "/")
+                    size = soulInput.readLong(inflatedInputStream)
+                    extension = soulInput.readString(inflatedInputStream)
+                    val nAttr = soulInput.readInt(inflatedInputStream)
+                    for (j in 0 until nAttr) {
+                        when (val posAttr = soulInput.readInt(inflatedInputStream)) {
+                            0 -> bitrate = soulInput.readInt(inflatedInputStream)
+                            1 -> duration = soulInput.readInt(inflatedInputStream)
+                            2 -> vbr = soulInput.readInt(inflatedInputStream)
+                            else -> soulInput.readInt(inflatedInputStream)
+                        }
                     }
-                }
-                var filename = ""
-                var folder = ""
-                var folderPath = ""
-                val a = path.lastIndexOf("/")
-                if (a > 0 && a < path.length) {
-                    filename = path.substring(a + 1)
-                    folderPath = path.substring(0, a)
-                    val s = folderPath.lastIndexOf("/")
-                    folder = if (s < 0) "/" else folderPath.substring(s)
-                }
-                soulFiles.add(
-                    SoulFile(
-                        path,
-                        filename,
-                        folderPath,
-                        folder,
-                        size,
-                        extension,
-                        bitrate,
-                        vbr,
-                        duration
+                    var filename = ""
+                    var folder = ""
+                    var folderPath = ""
+                    val a = path.lastIndexOf("/")
+                    if (a > 0 && a < path.length) {
+                        filename = path.substring(a + 1)
+                        folderPath = path.substring(0, a)
+                        val s = folderPath.lastIndexOf("/")
+                        folder = if (s < 0) "/" else folderPath.substring(s)
+                    }
+                    soulFiles.add(
+                        SoulFile(
+                            path,
+                            filename,
+                            folderPath,
+                            folder,
+                            size,
+                            extension,
+                            bitrate,
+                            vbr,
+                            duration
+                        )
                     )
-                )
+                }
+                slotsFree = soulInput.readBoolean(inflatedInputStream)
+                avgSpeed = soulInput.readInt(inflatedInputStream)
+                queueLength = soulInput.readLong(inflatedInputStream)
+
+                peer.soulFiles = soulFiles
+                peer.slotsFree = slotsFree
+                peer.avgSpeed = avgSpeed
+                peer.queueLength = queueLength
+                println("Received " + nResults + " search results from ${this.peer.username}\n soulfiles : ${peer.soulFiles}")
+
+                soulInput.packLeft = 0
+                if (!peer.soulFiles.isNullOrEmpty())
+                    PeerRepository.addOrUpdatePeer(peer)
             }
-            slotsFree = soulInput.readBoolean(inflatedInputStream)
-            avgSpeed = soulInput.readInt(inflatedInputStream)
-            queueLength = soulInput.readLong(inflatedInputStream)
-
-            peer.soulFiles = soulFiles
-            peer.slotsFree = slotsFree
-            peer.avgSpeed = avgSpeed
-            peer.queueLength = queueLength
-            println("Received " + nResults + " search results from ${this.peer.username}\n soulfiles : ${peer.soulFiles}")
-
-            soulInput.packLeft = 0
-            if (!peer.soulFiles.isNullOrEmpty())
-                PeerRepository.addOrUpdatePeer(peer)
         }
-    }
-
+    */
 
     private fun receiveInfoRequest() {
     }
 
 
-    private fun receiveInfoReply() {
+    private suspend fun receiveInfoReply() {
         val description = soulInput.readString()
         if (soulInput.readBoolean()) {
             val picture = soulInput.readString()
@@ -258,7 +254,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
 
-    private fun receiveFolderContentsRequest() {
+    private suspend fun receiveFolderContentsRequest() {
         val nFiles = soulInput.readInt()
         val file = arrayOfNulls<String>(nFiles)
         for (i in 0 until nFiles) {
@@ -320,7 +316,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
 
-    private fun receiveTransferRequest() {
+    private suspend fun receiveTransferRequest() {
         val direction = soulInput.readInt()
         val ticket = soulInput.readInt()
         val path = soulInput.readString()
@@ -354,7 +350,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
 
-    private fun receiveTransferReply() {
+    private suspend fun receiveTransferReply() {
         println("Received transfer reply.")
         val ticket = soulInput.readInt()
         val allowed = soulInput.readBoolean()
@@ -369,7 +365,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
 
-    private fun receiveQueueDownload() {
+    private suspend fun receiveQueueDownload() {
         val filename = soulInput.readString()
         /* println( "Received a queue download request.")
          this.service.queueUpload(this.peerName, filename)*/
@@ -385,13 +381,13 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
 
-    private fun receiveUploadFailed() {
+    private suspend fun receiveUploadFailed() {
         val reason = soulInput.readString()
         println(reason)
     }
 
 
-    private fun receiveQueueFailed() {
+    private suspend fun receiveQueueFailed() {
         val path = soulInput.readString()
         println("Queue Failed. Reason: " + soulInput.readString())
     }
@@ -424,7 +420,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
         return outputStream.toByteArray()
     }
 
-    fun pierceFirewall(token: Int) {
+    suspend fun pierceFirewall(token: Int) {
         sendMessage(
             ByteMessage()
                 .writeInt8(0)
@@ -433,7 +429,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
         )
     }
 
-    fun peerInit(username: String, connectionType: String, token: Int) {
+    suspend fun peerInit(username: String, connectionType: String, token: Int) {
         sendMessage(
             ByteMessage().writeInt8(1)
                 .writeStr(username)
@@ -444,7 +440,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
 
-    private fun getShareFileList() {
+    private suspend fun getShareFileList() {
         sendMessage(
             ByteMessage()
                 .writeInt8(4)
@@ -452,7 +448,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
         )
     }
 
-    fun fileSearchRequest(token: Int, query: String) {
+    suspend fun fileSearchRequest(token: Int, query: String) {
         sendMessage(
             ByteMessage()
                 .writeInt8(8)
@@ -463,7 +459,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
 
-    private fun userInfoRequest() {
+    private suspend fun userInfoRequest() {
         sendMessage(ByteMessage().writeInt8(15).getBuff())
     }
 
@@ -520,7 +516,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     */
 
 
-    fun transferRequest(direction: Int, token: Int, soulFile: SoulFile, fileSize: Long?) {
+    suspend fun transferRequest(direction: Int, token: Int, soulFile: SoulFile, fileSize: Long?) {
         println("sending transfer request for ${soulFile.filename}, direction $direction, token $token")
         val actualToken = SoulStack.actualSearchToken
         askedFiles[soulFile.path] = soulFile
@@ -546,7 +542,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
         sendMessage(msgTransfer.getBuff())
     }
 
-    fun downloadReply(ticket: Int, allowed: Boolean, reason: String?) {
+    suspend fun downloadReply(ticket: Int, allowed: Boolean, reason: String?) {
         val msg = ByteMessage()
             .writeInt32(41)
             .writeInt32(ticket)
@@ -559,7 +555,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
 
-    fun queueDownload(soulFile: SoulFile) {
+    suspend fun queueDownload(soulFile: SoulFile) {
         sendMessage(
             ByteMessage()
                 .writeInt32(43)
@@ -568,7 +564,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
         )
     }
 
-    fun placeInQueueRequest(filename: String) {
+    suspend fun placeInQueueRequest(filename: String) {
         sendMessage(
             ByteMessage()
                 .writeInt32(51)
@@ -578,43 +574,43 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
 
-/*: (isUpload, token, file, size) => {
-let msg = new Message().int32(40);
-msg.int32(+isUpload); // direction 1 for upload
-msg.int32(token).str(file);
+    /*: (isUpload, token, file, size) => {
+    let msg = new Message().int32(40);
+    msg.int32(+isUpload); // direction 1 for upload
+    msg.int32(token).str(file);
 
-if (isUpload) {
-    msg.int64(size);
-}
+    if (isUpload) {
+        msg.int64(size);
+    }
 
-return msg;
-},*/
-/*
-transferResponse: (token, allowed, size) => {
-let msg = new Message().int32(41).int32(token);
+    return msg;
+    },*/
+    /*
+    transferResponse: (token, allowed, size) => {
+    let msg = new Message().int32(41).int32(token);
 
-if (allowed) {
-    msg.int8(true).int64(size);
-} else {
-    msg.int8(false).str(size); // reason
-}
+    if (allowed) {
+        msg.int8(true).int64(size);
+    } else {
+        msg.int8(false).str(size); // reason
+    }
 
-return msg;
-},
-queueUpload: file => new Message().int32(43).str(file),
-placeInQueue: (file, place) => {
-return new Message().int32(44).str(file).int32(place);
-},
-uploadFailed: file => new Message().int32(46).str(file),
-queueFailed: (file, reason) => {
-return new Message().int32(50).str(file).str(reason);
-},
-// TODO may not need this
-placeInQueueRequest: file => new Message().int32(51).str(file)*/
+    return msg;
+    },
+    queueUpload: file => new Message().int32(43).str(file),
+    placeInQueue: (file, place) => {
+    return new Message().int32(44).str(file).int32(place);
+    },
+    uploadFailed: file => new Message().int32(46).str(file),
+    queueFailed: (file, reason) => {
+    return new Message().int32(50).str(file).str(reason);
+    },
+    // TODO may not need this
+    placeInQueueRequest: file => new Message().int32(51).str(file)*/
 
-/* private fun setPeerSocketInterface(callback: PeerSocketInterface) {
-    this.peerSocketInterface = callback
-}*/
+    /* private fun setPeerSocketInterface(callback: PeerSocketInterface) {
+        this.peerSocketInterface = callback
+    }*/
 
 
     private fun fromUnsignedInt(value: Long): ByteArray {

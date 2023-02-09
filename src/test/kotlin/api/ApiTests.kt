@@ -26,6 +26,7 @@ class ApiTests {
     @Test
     fun shouldSuccessLogin() {
         runBlocking {
+            delay(2000)
             assertEquals(true, LoginRepository.getLoginStatus().connected)
         }
     }

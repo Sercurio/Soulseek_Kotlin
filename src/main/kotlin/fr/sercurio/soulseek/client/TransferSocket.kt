@@ -28,7 +28,7 @@ class TransferSocket(private val peer: PeerApiModel) : Runnable {
             socket.connect(InetSocketAddress(peer.host, peer.port), 1000)
             output = socket.getOutputStream()
             val inputStream = socket.getInputStream()
-            val soulInput = SoulInputStream(DataInputStream(inputStream))
+            //val soulInput = SoulInputStream(DataInputStream(inputStream))
 
             onSocketConnected()
             connected = true
@@ -44,7 +44,7 @@ class TransferSocket(private val peer: PeerApiModel) : Runnable {
                     val buffer = ByteArray(131072)
                     var nRead: Int
                     var position = 0
-                    val ticket = soulInput.readInt()
+                    //val ticket = soulInput.readInt()
 
                     //TODO this is here that we resume or not the download
                     sendMessage(ByteMessage().writeInt32(0).getBuff())

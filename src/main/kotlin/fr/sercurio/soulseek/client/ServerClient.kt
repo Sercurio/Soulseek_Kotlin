@@ -6,35 +6,25 @@ import fr.sercurio.soulseek.repositories.LoginRepository
 import fr.sercurio.soulseek.repositories.PeerRepository
 import fr.sercurio.soulseek.repositories.RoomRepository
 import fr.sercurio.soulseek.toMD5
-import kotlinx.coroutines.runBlocking
 import fr.sercurio.soulseek.utils.SoulStack
+import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
-class ServerClient private constructor(
+class ServerClient(
     private val login: String,
     private val password: String,
     private val listenPort: Int,
     host: String,
     port: Int
 ) : SoulSocket(host, port) {
-    companion object {
-        private var instance: ServerClient? = null
 
-        fun getInstance(
-            login: String,
-            password: String,
-            listenPort: Int,
-            host: String,
-            port: Int
-        ): ServerClient {
-            if (instance == null)  // NOT thread safe!
-                instance = ServerClient(login, password, listenPort, host, port)
-
-            return instance!!
+    init {
+        runBlocking {
+            super.run()
         }
     }
 
-    override fun onSocketConnected() {
+    override suspend fun onSocketConnected() {
         login(login, password)
         setListenPort(listenPort)
     }
@@ -128,7 +118,7 @@ class ServerClient private constructor(
     }
 
 
-    private fun receiveAddUser() {
+    private suspend fun receiveAddUser() {
         val user = soulInput.readString()
         if (soulInput.readBoolean()) {
             val status = soulInput.readInt()
@@ -141,7 +131,7 @@ class ServerClient private constructor(
     }
 
 
-    private fun receiveGetStatus() {
+    private suspend fun receiveGetStatus() {
         val username = soulInput.readString()
         val status = soulInput.readInt()
         val privileged = soulInput.readBoolean()
@@ -341,7 +331,7 @@ class ServerClient private constructor(
     }
 
 
-    private fun receiveGetRecommendations() {
+    private suspend fun receiveGetRecommendations() {
         val nRecs = soulInput.readInt()
         val recs = arrayOfNulls<String>(nRecs)
         val recLevel = IntArray(nRecs)
@@ -363,7 +353,7 @@ class ServerClient private constructor(
     }
 
 
-    private fun receiveGetGlobalRecommendations() {
+    private suspend fun receiveGetGlobalRecommendations() {
         val nRecs = soulInput.readInt()
         val recs = arrayOfNulls<String>(nRecs)
         val recLevel = IntArray(nRecs)
@@ -429,12 +419,12 @@ class ServerClient private constructor(
     }
 
 
-    private fun receiveCheckPrivileges() {
+    private suspend fun receiveCheckPrivileges() {
         soulInput.readInt()
     }
 
 
-    private fun receiveSearchRequest() {
+    private suspend fun receiveSearchRequest() {
         val distributedCode: Byte = soulInput.readByte()
         val unknown = soulInput.readInt()
         val username = soulInput.readString()
@@ -443,7 +433,7 @@ class ServerClient private constructor(
     }
 
 
-    private fun receiveNetInfo() {
+    private suspend fun receiveNetInfo() {
         val nParents = soulInput.readInt()
         val parentUser = arrayOfNulls<String>(nParents)
         val parentIp = arrayOfNulls<String>(nParents)
@@ -456,12 +446,12 @@ class ServerClient private constructor(
     }
 
 
-    private fun receiveWishlistInterval() {
+    private suspend fun receiveWishlistInterval() {
         val interval = soulInput.readInt()
     }
 
 
-    private fun receiveGetSimilarUsers() {
+    private suspend fun receiveGetSimilarUsers() {
         val nUsers = soulInput.readInt()
         val user = arrayOfNulls<String>(nUsers)
         val status = IntArray(nUsers)
@@ -472,7 +462,7 @@ class ServerClient private constructor(
     }
 
 
-    private fun receiveGetItemRecommendations() {
+    private suspend fun receiveGetItemRecommendations() {
         val item = soulInput.readString()
         val nRecs = soulInput.readInt()
         val recs = arrayOfNulls<String>(nRecs)
@@ -484,7 +474,7 @@ class ServerClient private constructor(
     }
 
 
-    private fun receiveGetItemSimilarUsers() {
+    private suspend fun receiveGetItemSimilarUsers() {
         val item = soulInput.readString()
         val nUsers = soulInput.readInt()
         val user = arrayOfNulls<String>(nUsers)
@@ -538,12 +528,12 @@ class ServerClient private constructor(
     }
 
 
-    private fun receiveAcknowledgeNotifyPrivileges() {
+    private suspend fun receiveAcknowledgeNotifyPrivileges() {
         val token = soulInput.readInt()
     }
 
 
-    private fun receivePrivateRoomUsers() {
+    private suspend fun receivePrivateRoomUsers() {
         val room = soulInput.readString()
         val nUsers = soulInput.readInt()
         val users = arrayOfNulls<String>(nUsers)
@@ -552,28 +542,28 @@ class ServerClient private constructor(
         }
     }
 
-    private fun receivePrivateRoomAddUser() {
+    private suspend fun receivePrivateRoomAddUser() {
         val room = soulInput.readString()
         val user = soulInput.readString()
     }
 
-    private fun receivePrivateRoomRemoveUser() {
+    private suspend fun receivePrivateRoomRemoveUser() {
         val room = soulInput.readString()
         val user = soulInput.readString()
     }
 
 
-    private fun receivePrivateRoomAdded() {
+    private suspend fun receivePrivateRoomAdded() {
         val room = soulInput.readString()
     }
 
 
-    private fun receivePrivateRoomRemoved() {
+    private suspend fun receivePrivateRoomRemoved() {
         val room = soulInput.readString()
     }
 
 
-    private fun receivePrivateRoomToggle() {
+    private suspend fun receivePrivateRoomToggle() {
         val inviteEnabled = soulInput.readBoolean()
     }
 
@@ -584,29 +574,29 @@ class ServerClient private constructor(
     }
 
 
-    private fun receivePrivateRoomAddOperator() {
+    private suspend fun receivePrivateRoomAddOperator() {
         val room = soulInput.readString()
         val operator = soulInput.readString()
     }
 
 
-    private fun receivePrivateRoomRemoveOperator() {
+    private suspend fun receivePrivateRoomRemoveOperator() {
         val room = soulInput.readString()
         val operator = soulInput.readString()
     }
 
 
-    private fun receivePrivateRoomOperatorAdded() {
+    private suspend fun receivePrivateRoomOperatorAdded() {
         val room = soulInput.readString()
     }
 
 
-    private fun receivePrivateRoomOperatorRemoved() {
+    private suspend fun receivePrivateRoomOperatorRemoved() {
         val room = soulInput.readString()
     }
 
 
-    private fun receivePrivateRoomOwned() {
+    private suspend fun receivePrivateRoomOwned() {
         val room = soulInput.readString()
         val nOperators = soulInput.readInt()
         val operator = arrayOfNulls<String>(nOperators)
@@ -616,20 +606,20 @@ class ServerClient private constructor(
     }
 
 
-    private fun receivePublicChat() {
+    private suspend fun receivePublicChat() {
         val room = soulInput.readString()
         val user = soulInput.readString()
         val message = soulInput.readString()
     }
 
 
-    private fun receiveCannotConnect() {
+    private suspend fun receiveCannotConnect() {
         val token = soulInput.readInt()
         //onReceiveCannotConnect(token)
     }
 
     /* SENT TO SERVER */
-    private fun login(login: String, pwd: String) {
+    private suspend fun login(login: String, pwd: String) {
         sendMessage(
             ByteMessage().writeInt32(1)
                 .writeStr(login)
@@ -641,7 +631,7 @@ class ServerClient private constructor(
         )
     }
 
-    private fun setListenPort(port: Int) {
+    private suspend fun setListenPort(port: Int) {
         sendMessage(
             ByteMessage()
                 .writeInt32(2)
@@ -649,7 +639,7 @@ class ServerClient private constructor(
         )
     }
 
-    fun getPeerAddressByUsername(username: String) {
+    suspend fun getPeerAddressByUsername(username: String) {
         sendMessage(
             ByteMessage()
                 .writeInt32(3)
@@ -658,7 +648,7 @@ class ServerClient private constructor(
         )
     }
 
-    private fun addUser(username: String) {
+    private suspend fun addUser(username: String) {
         sendMessage(
             ByteMessage()
                 .writeInt32(5)
@@ -667,7 +657,7 @@ class ServerClient private constructor(
         )
     }
 
-    fun joinRoom(roomName: String /*Room room*/) {
+    suspend fun joinRoom(roomName: String /*Room room*/) {
         sendMessage(
             ByteMessage()
                 .writeInt32(14)
@@ -676,7 +666,7 @@ class ServerClient private constructor(
         )
     }
 
-    private fun setStatus(status: Int) {
+    private suspend fun setStatus(status: Int) {
         sendMessage(
             ByteMessage()
                 .writeInt32(28)
@@ -685,7 +675,7 @@ class ServerClient private constructor(
         )
     }
 
-    private fun sharedFoldersFiles(folderCount: Int, fileCount: Int) {
+    private suspend fun sharedFoldersFiles(folderCount: Int, fileCount: Int) {
         sendMessage(
             ByteMessage()
                 .writeInt32(26)
@@ -695,7 +685,7 @@ class ServerClient private constructor(
         )
     }
 
-    private fun haveNoParents(flag: Int) {
+    private suspend fun haveNoParents(flag: Int) {
         sendMessage(
             ByteMessage()
                 .writeInt32(71)
@@ -704,7 +694,7 @@ class ServerClient private constructor(
         )
     }
 
-    private fun parentIp(ip: IntArray) {
+    private suspend fun parentIp(ip: IntArray) {
         sendMessage(
             ByteMessage()
                 .writeInt32(73)
@@ -716,7 +706,7 @@ class ServerClient private constructor(
         )
     }
 
-    fun fileSearch(query: String) {
+    suspend fun fileSearch(query: String) {
         val token = Random.nextInt(Integer.MAX_VALUE)
         SoulStack.searches[token] = query
         SoulStack.actualSearchToken = token
@@ -731,7 +721,7 @@ class ServerClient private constructor(
         )
     }
 
-    fun userSearch(username: String, ticket: Int, query: String) {
+    suspend fun userSearch(username: String, ticket: Int, query: String) {
         val token = Random.nextInt(Integer.MAX_VALUE)
         SoulStack.searches[token] = query
         SoulStack.actualSearchToken = token
@@ -745,7 +735,7 @@ class ServerClient private constructor(
         )
     }
 
-    fun sendRoomMessage(roomMessageApiModel: RoomMessageApiModel) {
+    suspend fun sendRoomMessage(roomMessageApiModel: RoomMessageApiModel) {
         sendMessage(
             ByteMessage()
                 .writeInt32(13)

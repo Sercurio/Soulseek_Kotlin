@@ -1,15 +1,16 @@
 package fr.sercurio.soulseek.client
 
+import io.ktor.utils.io.*
 import java.io.DataInputStream
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class SoulInputStream(val dis: DataInputStream) {
+class SoulInputStream(val readChannel: ByteReadChannel) {
     private val tag = this.javaClass.simpleName
     var packLeft: Int = 0
 
-    fun readAndSetMessageLength() {
+    suspend fun readAndSetMessageLength() {
         this.packLeft = this.readInt()
     }
 
@@ -18,22 +19,22 @@ class SoulInputStream(val dis: DataInputStream) {
             .order(ByteOrder.BIG_ENDIAN).getInt(0)
     }
 
-    fun readInt(): Int {
-        val g: Int = this.dis.readInt()
+    suspend fun readInt(): Int {
+        val g: Int = this.readChannel.readIntLittleEndian()
         this.packLeft -= 4
-        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(g).order(ByteOrder.BIG_ENDIAN).getInt(0)
+        return g
     }
 
-    fun readBoolean(): Boolean {
-        val a = dis.readBoolean()
+    suspend fun readBoolean(): Boolean {
+        val a = readChannel.readBoolean()
         packLeft--
         return a
     }
 
-    fun readString(): String {
+    suspend fun readString(): String {
         val length = readInt()
         val tmp = ByteArray(length)
-        dis.readFully(tmp, 0, length)
+        readChannel.readFully(tmp, 0, length)
         packLeft -= length
         return String(tmp).replace("\\", "/")
     }
@@ -55,7 +56,7 @@ class SoulInputStream(val dis: DataInputStream) {
         return String(tmp).replace("\\", "/")
     }
 
-    fun readIp(): String {
+    suspend fun readIp(): String {
         val d: Byte = readByte()
         val c: Byte = readByte()
         val b: Byte = readByte()
@@ -64,8 +65,8 @@ class SoulInputStream(val dis: DataInputStream) {
     }
 
 
-    fun readLong(): Long {
-        val g = dis.readLong()
+    suspend fun readLong(): Long {
+        val g = readChannel.readLong()
         packLeft -= 8
         return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(g).order(ByteOrder.BIG_ENDIAN)
             .getLong(0)
@@ -76,16 +77,16 @@ class SoulInputStream(val dis: DataInputStream) {
     }
 
 
-    fun readByte(): Byte {
-        val a = dis.readByte()
+    suspend fun readByte(): Byte {
+        val a = readChannel.readByte()
         packLeft--
         return a
     }
 
-    fun checkPackLeft() {
+    suspend fun checkPackLeft() {
         if (packLeft > 0) {
             println("Skipping bytes. N: $packLeft")
-            dis.skipBytes(packLeft)
+            readChannel.discardExact(packLeft.toLong())
         }
         if (packLeft < 0) {
             println("Overrun on packet reading!")
