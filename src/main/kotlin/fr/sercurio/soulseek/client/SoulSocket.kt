@@ -1,6 +1,5 @@
 package fr.sercurio.soulseek.client
 
-import withThreads.SoulInputStream
 import java.io.DataInputStream
 import java.io.InputStream
 import java.io.OutputStream

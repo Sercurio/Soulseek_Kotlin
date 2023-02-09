@@ -1,4 +1,4 @@
-package withThreads
+package fr.sercurio.soulseek.client
 
 import java.io.DataInputStream
 import java.io.IOException

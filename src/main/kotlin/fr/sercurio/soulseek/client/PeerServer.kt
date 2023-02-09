@@ -1,4 +1,4 @@
-package withThreads
+package fr.sercurio.soulseek.client
 
 import java.net.ServerSocket
 import java.net.Socket

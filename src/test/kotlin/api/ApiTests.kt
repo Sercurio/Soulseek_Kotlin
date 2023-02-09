@@ -74,7 +74,6 @@ class ApiTests {
             user
                 ?.clientSocket
                 ?.transferRequest(0, user.token, user.soulFiles!![0], null)
-            while (true);
         }
     }
 }

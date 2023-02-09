@@ -2,7 +2,6 @@ package fr.sercurio.soulseek.client
 
 import fr.sercurio.soulseek.entities.ByteMessage
 import fr.sercurio.soulseek.entities.PeerApiModel
-import withThreads.SoulInputStream
 import java.io.DataInputStream
 import java.io.File
 import java.io.FileOutputStream
