@@ -18,6 +18,7 @@ class ServerClient(
     port: Int
 ) : SoulSocket(host, port) {
 
+
     init {
         runBlocking {
             super.run()
@@ -35,11 +36,11 @@ class ServerClient(
 
     override fun onMessageReceived() {
         runBlocking {
-            soulInput.readAndSetMessageLength()
+            readChannel.readAndSetMessageLength()
 
             //this.packLeft = soulInput.readInt()
-            val code = soulInput.readInt()
-            println("ServerClient received: Message code:" + code + " Packet Size:" + (soulInput.packLeft + 4))
+            val code = readChannel.readInt()
+            println("ServerClient received: Message code:" + code + " Packet Size:" + (readChannel.packLeft + 4))
             when (code) {
                 1 -> receiveLogin()
                 3 -> receiveGetPeerAddress()
@@ -94,54 +95,54 @@ class ServerClient(
 
 
     private suspend fun receiveLogin() {
-        if (soulInput.readBoolean()) {
-            val greeting = soulInput.readString()
-            val ip = soulInput.readInt()
+        if (readChannel.readBoolean()) {
+            val greeting = readChannel.readString()
+            val ip = readChannel.readInt()
             println("Logged In.")
             //serverSocketInterface.onLogin(1, "connected", ip.toString())
 
             LoginRepository.setLoginStatus(LoginApiModel(true, ""))
 
         } else {
-            val reason: String = soulInput.readString()
+            val reason: String = readChannel.readString()
             this.connected = false
             println("Login Failed:$reason")
         }
     }
 
     private suspend fun receiveGetPeerAddress() {
-        val username = soulInput.readString()
-        val ip: String = soulInput.readIp()
-        val port = soulInput.readInt()
+        val username = readChannel.readString()
+        val ip: String = readChannel.readIp()
+        val port = readChannel.readInt()
 
         PeerRepository.addOrUpdatePeer(PeerApiModel(username = username, host = ip, port = port))
     }
 
 
     private suspend fun receiveAddUser() {
-        val user = soulInput.readString()
-        if (soulInput.readBoolean()) {
-            val status = soulInput.readInt()
-            val avgSpeed = soulInput.readInt()
-            val downloadNum: Long = soulInput.readLong()
-            val files = soulInput.readInt()
-            val dirs = soulInput.readInt()
-            soulInput.readString()
+        val user = readChannel.readString()
+        if (readChannel.readBoolean()) {
+            val status = readChannel.readInt()
+            val avgSpeed = readChannel.readInt()
+            val downloadNum: Long = readChannel.readLong()
+            val files = readChannel.readInt()
+            val dirs = readChannel.readInt()
+            readChannel.readString()
         }
     }
 
 
     private suspend fun receiveGetStatus() {
-        val username = soulInput.readString()
-        val status = soulInput.readInt()
-        val privileged = soulInput.readBoolean()
+        val username = readChannel.readString()
+        val status = readChannel.readInt()
+        val privileged = readChannel.readBoolean()
     }
 
 
     private suspend fun receiveSayInChatRoom() {
-        val room = soulInput.readString()
-        val username = soulInput.readString()
-        val message = soulInput.readString()
+        val room = readChannel.readString()
+        val username = readChannel.readString()
+        val message = readChannel.readString()
         RoomRepository.addRoomMessage(RoomMessageApiModel(room, username, message))
     }
 
@@ -210,21 +211,21 @@ class ServerClient(
 
 
     private suspend fun receiveLeaveRoom() {
-        val room = soulInput.readString()
+        val room = readChannel.readString()
         RoomRepository.addRoomMessage(RoomMessageApiModel(room, "SYSTEM", "Leaving room"))
     }
 
 
     private suspend fun receiveUserJoinedRoom() {
-        val room = soulInput.readString()
-        val username = soulInput.readString()
-        val status = soulInput.readInt()
-        val avgspeed = soulInput.readInt()
-        val downloadNum: Long = soulInput.readLong()
-        val files = soulInput.readInt()
-        val dirs = soulInput.readInt()
-        val slotsFree = soulInput.readInt()
-        val countryCode = soulInput.readString()
+        val room = readChannel.readString()
+        val username = readChannel.readString()
+        val status = readChannel.readInt()
+        val avgspeed = readChannel.readInt()
+        val downloadNum: Long = readChannel.readLong()
+        val files = readChannel.readInt()
+        val dirs = readChannel.readInt()
+        val slotsFree = readChannel.readInt()
+        val countryCode = readChannel.readString()
 
         RoomRepository.addRoomMessage(
             RoomMessageApiModel(
@@ -237,8 +238,8 @@ class ServerClient(
 
 
     private suspend fun receiveUserLeftRoom() {
-        val roomName = soulInput.readString()
-        val username = soulInput.readString()
+        val roomName = readChannel.readString()
+        val username = readChannel.readString()
 
         RoomRepository.addRoomMessage(
             RoomMessageApiModel(
@@ -251,12 +252,12 @@ class ServerClient(
 
 
     private suspend fun receiveConnectToPeer() {
-        val username = soulInput.readString()
-        val type = soulInput.readString()
-        val ip: String = soulInput.readIp()
-        val port = soulInput.readInt()
-        val token = soulInput.readInt()
-        soulInput.readBoolean()
+        val username = readChannel.readString()
+        val type = readChannel.readString()
+        val ip: String = readChannel.readIp()
+        val port = readChannel.readInt()
+        val token = readChannel.readInt()
+        readChannel.readBoolean()
 
         if (type == "P")
             PeerRepository.initiateClientSocket(
@@ -332,44 +333,44 @@ class ServerClient(
 
 
     private suspend fun receiveGetRecommendations() {
-        val nRecs = soulInput.readInt()
+        val nRecs = readChannel.readInt()
         val recs = arrayOfNulls<String>(nRecs)
         val recLevel = IntArray(nRecs)
         var i: Int = 0
         while (i < nRecs) {
-            recs[i] = soulInput.readString()
-            recLevel[i] = soulInput.readInt()
+            recs[i] = readChannel.readString()
+            recLevel[i] = readChannel.readInt()
             i++
         }
-        val nUnRecs = soulInput.readInt()
+        val nUnRecs = readChannel.readInt()
         val unRecs = arrayOfNulls<String>(nUnRecs)
         val unRecLevel = IntArray(nUnRecs)
         i = 0
         while (i < nUnRecs) {
-            unRecs[i] = soulInput.readString()
-            unRecLevel[i] = soulInput.readInt()
+            unRecs[i] = readChannel.readString()
+            unRecLevel[i] = readChannel.readInt()
             i++
         }
     }
 
 
     private suspend fun receiveGetGlobalRecommendations() {
-        val nRecs = soulInput.readInt()
+        val nRecs = readChannel.readInt()
         val recs = arrayOfNulls<String>(nRecs)
         val recLevel = IntArray(nRecs)
         var i: Int = 0
         while (i < nRecs) {
-            recs[i] = soulInput.readString()
-            recLevel[i] = soulInput.readInt()
+            recs[i] = readChannel.readString()
+            recLevel[i] = readChannel.readInt()
             i++
         }
-        val nUnRecs = soulInput.readInt()
+        val nUnRecs = readChannel.readInt()
         val unRecs = arrayOfNulls<String>(nUnRecs)
         val unRecLevel = IntArray(nUnRecs)
         i = 0
         while (i < nUnRecs) {
-            unRecs[i] = soulInput.readString()
-            unRecLevel[i] = soulInput.readInt()
+            unRecs[i] = readChannel.readString()
+            unRecLevel[i] = readChannel.readInt()
             i++
         }
     }
@@ -420,67 +421,67 @@ class ServerClient(
 
 
     private suspend fun receiveCheckPrivileges() {
-        soulInput.readInt()
+        readChannel.readInt()
     }
 
 
     private suspend fun receiveSearchRequest() {
-        val distributedCode: Byte = soulInput.readByte()
-        val unknown = soulInput.readInt()
-        val username = soulInput.readString()
-        val token = soulInput.readInt()
-        val query = soulInput.readString()
+        val distributedCode: Byte = readChannel.readByte()
+        val unknown = readChannel.readInt()
+        val username = readChannel.readString()
+        val token = readChannel.readInt()
+        val query = readChannel.readString()
     }
 
 
     private suspend fun receiveNetInfo() {
-        val nParents = soulInput.readInt()
+        val nParents = readChannel.readInt()
         val parentUser = arrayOfNulls<String>(nParents)
         val parentIp = arrayOfNulls<String>(nParents)
         val parentPort = IntArray(nParents)
         for (i in 0 until nParents) {
-            parentUser[i] = soulInput.readString()
-            parentIp[i] = soulInput.readIp()
-            parentPort[i] = soulInput.readInt()
+            parentUser[i] = readChannel.readString()
+            parentIp[i] = readChannel.readIp()
+            parentPort[i] = readChannel.readInt()
         }
     }
 
 
     private suspend fun receiveWishlistInterval() {
-        val interval = soulInput.readInt()
+        val interval = readChannel.readInt()
     }
 
 
     private suspend fun receiveGetSimilarUsers() {
-        val nUsers = soulInput.readInt()
+        val nUsers = readChannel.readInt()
         val user = arrayOfNulls<String>(nUsers)
         val status = IntArray(nUsers)
         for (i in 0 until nUsers) {
-            user[i] = soulInput.readString()
-            status[i] = soulInput.readInt()
+            user[i] = readChannel.readString()
+            status[i] = readChannel.readInt()
         }
     }
 
 
     private suspend fun receiveGetItemRecommendations() {
-        val item = soulInput.readString()
-        val nRecs = soulInput.readInt()
+        val item = readChannel.readString()
+        val nRecs = readChannel.readInt()
         val recs = arrayOfNulls<String>(nRecs)
         val receivedValues = IntArray(nRecs)
         for (i in 0 until nRecs) {
-            recs[i] = soulInput.readString()
-            receivedValues[i] = soulInput.readInt()
+            recs[i] = readChannel.readString()
+            receivedValues[i] = readChannel.readInt()
         }
     }
 
 
     private suspend fun receiveGetItemSimilarUsers() {
-        val item = soulInput.readString()
-        val nUsers = soulInput.readInt()
+        val item = readChannel.readString()
+        val nUsers = readChannel.readInt()
         val user = arrayOfNulls<String>(nUsers)
         for (i in 0 until nUsers) {
-            user[i] = soulInput.readString()
-            soulInput.readInt()
+            user[i] = readChannel.readString()
+            readChannel.readInt()
         }
     }
 
@@ -529,42 +530,42 @@ class ServerClient(
 
 
     private suspend fun receiveAcknowledgeNotifyPrivileges() {
-        val token = soulInput.readInt()
+        val token = readChannel.readInt()
     }
 
 
     private suspend fun receivePrivateRoomUsers() {
-        val room = soulInput.readString()
-        val nUsers = soulInput.readInt()
+        val room = readChannel.readString()
+        val nUsers = readChannel.readInt()
         val users = arrayOfNulls<String>(nUsers)
         for (i in 0 until nUsers) {
-            users[i] = soulInput.readString()
+            users[i] = readChannel.readString()
         }
     }
 
     private suspend fun receivePrivateRoomAddUser() {
-        val room = soulInput.readString()
-        val user = soulInput.readString()
+        val room = readChannel.readString()
+        val user = readChannel.readString()
     }
 
     private suspend fun receivePrivateRoomRemoveUser() {
-        val room = soulInput.readString()
-        val user = soulInput.readString()
+        val room = readChannel.readString()
+        val user = readChannel.readString()
     }
 
 
     private suspend fun receivePrivateRoomAdded() {
-        val room = soulInput.readString()
+        val room = readChannel.readString()
     }
 
 
     private suspend fun receivePrivateRoomRemoved() {
-        val room = soulInput.readString()
+        val room = readChannel.readString()
     }
 
 
     private suspend fun receivePrivateRoomToggle() {
-        val inviteEnabled = soulInput.readBoolean()
+        val inviteEnabled = readChannel.readBoolean()
     }
 
 
@@ -575,46 +576,46 @@ class ServerClient(
 
 
     private suspend fun receivePrivateRoomAddOperator() {
-        val room = soulInput.readString()
-        val operator = soulInput.readString()
+        val room = readChannel.readString()
+        val operator = readChannel.readString()
     }
 
 
     private suspend fun receivePrivateRoomRemoveOperator() {
-        val room = soulInput.readString()
-        val operator = soulInput.readString()
+        val room = readChannel.readString()
+        val operator = readChannel.readString()
     }
 
 
     private suspend fun receivePrivateRoomOperatorAdded() {
-        val room = soulInput.readString()
+        val room = readChannel.readString()
     }
 
 
     private suspend fun receivePrivateRoomOperatorRemoved() {
-        val room = soulInput.readString()
+        val room = readChannel.readString()
     }
 
 
     private suspend fun receivePrivateRoomOwned() {
-        val room = soulInput.readString()
-        val nOperators = soulInput.readInt()
+        val room = readChannel.readString()
+        val nOperators = readChannel.readInt()
         val operator = arrayOfNulls<String>(nOperators)
         for (i in 0 until nOperators) {
-            operator[i] = soulInput.readString()
+            operator[i] = readChannel.readString()
         }
     }
 
 
     private suspend fun receivePublicChat() {
-        val room = soulInput.readString()
-        val user = soulInput.readString()
-        val message = soulInput.readString()
+        val room = readChannel.readString()
+        val user = readChannel.readString()
+        val message = readChannel.readString()
     }
 
 
     private suspend fun receiveCannotConnect() {
-        val token = soulInput.readInt()
+        val token = readChannel.readInt()
         //onReceiveCannotConnect(token)
     }
 
@@ -749,16 +750,16 @@ class ServerClient(
         val rooms = arrayListOf<RoomApiModel>()
 
         val publicRooms = arrayListOf<RoomApiModel>()
-        val nbPublicRooms = soulInput.readInt()
+        val nbPublicRooms = readChannel.readInt()
         for (j in 0 until nbPublicRooms) {
             publicRooms.add(
                 RoomApiModel(
-                    name = soulInput.readString()
+                    name = readChannel.readString()
                 )
             )
         }
         for (room in publicRooms) {
-            room.nbUsers = soulInput.readInt()
+            room.nbUsers = readChannel.readInt()
         }
         rooms.addAll(publicRooms)
         /*

@@ -51,9 +51,9 @@ class ApiTests {
     fun shouldReceiveConnectToPeerWith_P_Type() {
         runBlocking {
             soulSeekApi.serverClient.userSearch(
-                "flat 58",
+                "Airmess",
                 Random.nextInt(Integer.MAX_VALUE),
-                "soupe au choux"
+                "Stupeflip vite"
             )
             delay(1000)
             assertTrue(PeerRepository.peers["flat 58"]?.connectionType == "P")

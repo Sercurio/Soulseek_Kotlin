@@ -6,7 +6,7 @@ import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class SoulInputStream(val readChannel: ByteReadChannel) {
+class SoulInputStream(val byteReadChannel: ByteReadChannel) {
     private val tag = this.javaClass.simpleName
     var packLeft: Int = 0
 
@@ -20,13 +20,13 @@ class SoulInputStream(val readChannel: ByteReadChannel) {
     }
 
     suspend fun readInt(): Int {
-        val g: Int = this.readChannel.readIntLittleEndian()
+        val g: Int = this.byteReadChannel.readIntLittleEndian()
         this.packLeft -= 4
         return g
     }
 
     suspend fun readBoolean(): Boolean {
-        val a = readChannel.readBoolean()
+        val a = byteReadChannel.readBoolean()
         packLeft--
         return a
     }
@@ -34,7 +34,7 @@ class SoulInputStream(val readChannel: ByteReadChannel) {
     suspend fun readString(): String {
         val length = readInt()
         val tmp = ByteArray(length)
-        readChannel.readFully(tmp, 0, length)
+        byteReadChannel.readFully(tmp, 0, length)
         packLeft -= length
         return String(tmp).replace("\\", "/")
     }
@@ -66,7 +66,7 @@ class SoulInputStream(val readChannel: ByteReadChannel) {
 
 
     suspend fun readLong(): Long {
-        val g = readChannel.readLong()
+        val g = byteReadChannel.readLong()
         packLeft -= 8
         return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(g).order(ByteOrder.BIG_ENDIAN)
             .getLong(0)
@@ -78,7 +78,7 @@ class SoulInputStream(val readChannel: ByteReadChannel) {
 
 
     suspend fun readByte(): Byte {
-        val a = readChannel.readByte()
+        val a = byteReadChannel.readByte()
         packLeft--
         return a
     }
@@ -86,7 +86,7 @@ class SoulInputStream(val readChannel: ByteReadChannel) {
     suspend fun checkPackLeft() {
         if (packLeft > 0) {
             println("Skipping bytes. N: $packLeft")
-            readChannel.discardExact(packLeft.toLong())
+            byteReadChannel.discardExact(packLeft.toLong())
         }
         if (packLeft < 0) {
             println("Overrun on packet reading!")

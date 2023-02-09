@@ -2,6 +2,10 @@ package fr.sercurio.soulseek.client
 
 import fr.sercurio.soulseek.entities.ByteMessage
 import fr.sercurio.soulseek.entities.PeerApiModel
+import io.ktor.network.selector.*
+import io.ktor.network.sockets.*
+import io.ktor.utils.io.*
+import kotlinx.coroutines.Dispatchers
 import java.io.DataInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -11,26 +15,23 @@ import java.net.Socket
 import java.util.concurrent.Executors
 
 
-class TransferSocket(private val peer: PeerApiModel) : Runnable {
+class TransferSocket(private val peer: PeerApiModel) {
     private val tag = SoulSocket::class.java.name
-    private lateinit var output: OutputStream
-    private val executorService = Executors.newSingleThreadExecutor()
+
+    private lateinit var readChannel: SoulInputStream
+    private lateinit var writeChannel: ByteWriteChannel
 
     private var connected = false
 
-    init {
-        Thread(this).start()
-    }
-
-    override fun run() {
-        val socket = Socket()
+    suspend operator fun invoke() {
         try {
-            socket.connect(InetSocketAddress(peer.host, peer.port), 1000)
-            output = socket.getOutputStream()
-            val inputStream = socket.getInputStream()
-            //val soulInput = SoulInputStream(DataInputStream(inputStream))
+            val selectorManager = SelectorManager(Dispatchers.IO)
+            val socket = aSocket(selectorManager).tcp().connect(peer.host, peer.port)
+            readChannel = SoulInputStream(socket.openReadChannel())
+            writeChannel = socket.openWriteChannel()
 
             onSocketConnected()
+
             connected = true
             if (connected) {
                 try {
@@ -51,7 +52,8 @@ class TransferSocket(private val peer: PeerApiModel) : Runnable {
 
                     var transferring = true
                     while (transferring) {
-                        nRead = inputStream.read(
+                        /*
+                        nRead = readChannel.read(
                             buffer,
                             0,
                             if (fileSize - position < 131072) (fileSize - position) else 131072
@@ -66,6 +68,7 @@ class TransferSocket(private val peer: PeerApiModel) : Runnable {
                             transferring = false
                         }
                         println(position)
+                        */
                     }
                     println("finished")
                     fileOutputStream.close()
@@ -83,7 +86,6 @@ class TransferSocket(private val peer: PeerApiModel) : Runnable {
             onSocketDisconnected()
         } finally {
             connected = false
-            socket.close()
         }
     }
 
@@ -95,14 +97,11 @@ class TransferSocket(private val peer: PeerApiModel) : Runnable {
         println("downloading socket closed")
     }
 
-    private fun sendMessage(message: ByteArray) {
-        executorService.submit {
-            output.write(message)
-            output.flush()
-        }
+    private suspend fun sendMessage(message: ByteArray) {
+        writeChannel.write { it.put(message) }
     }
 
-    private fun pierceFirewall(token: Int) {
+    private suspend fun pierceFirewall(token: Int) {
         sendMessage(
             ByteMessage()
                 .writeInt8(0)

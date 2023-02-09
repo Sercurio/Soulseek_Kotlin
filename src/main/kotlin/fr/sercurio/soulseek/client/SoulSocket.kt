@@ -11,7 +11,7 @@ abstract class SoulSocket(
 ) {
     private val tag = SoulSocket::class.java.name
 
-    lateinit var soulInput: SoulInputStream
+    lateinit var readChannel: SoulInputStream
     private lateinit var writeChannel: ByteWriteChannel
 
     var connected = false
@@ -20,9 +20,8 @@ abstract class SoulSocket(
         try {
             val selectorManager = SelectorManager(Dispatchers.IO)
             val socket = aSocket(selectorManager).tcp().connect(host, port)
-            val readChannel = socket.openReadChannel()
-            writeChannel = socket.openWriteChannel()
-            soulInput = SoulInputStream(readChannel)
+            readChannel = SoulInputStream(socket.openReadChannel())
+            writeChannel = socket.openWriteChannel(autoFlush = true)
 
             onSocketConnected()
             connected = true
@@ -30,7 +29,7 @@ abstract class SoulSocket(
             while (connected) {
 
                 onMessageReceived()
-                soulInput.checkPackLeft()
+                readChannel.checkPackLeft()
             }
         } catch (e: Exception) {
             println(
@@ -45,7 +44,6 @@ abstract class SoulSocket(
 
     suspend fun sendMessage(message: ByteArray) {
         writeChannel.write { it.put(message) }
-        writeChannel.flush()
     }
 
     fun stop() {
