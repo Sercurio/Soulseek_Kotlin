@@ -3,6 +3,7 @@ package fr.sercurio.soulseek.client
 import fr.sercurio.soulseek.entities.ByteMessage
 import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.SoulFile
+import fr.sercurio.soulseek.repositories.PeerRepository
 import fr.sercurio.soulseek.toInt
 import fr.sercurio.soulseek.utils.SoulStack
 import io.ktor.network.selector.*
@@ -15,6 +16,7 @@ import java.io.EOFException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.zip.Inflater
+import java.util.zip.InflaterInputStream
 
 
 class ClientPeer(
@@ -31,12 +33,12 @@ class ClientPeer(
     init {
         runBlocking {
             connect()
+            onSocketConnected()
             GlobalScope.launch {
                 while (true) {
                     receive()
                 }
             }
-            onSocketConnected()
         }
     }
 
@@ -59,10 +61,6 @@ class ClientPeer(
         fileSearchRequest(peer.token, actualSearch)
     }
 
-    fun onSocketDisconnected() {
-        println("Disconnected of $peer")
-        this.peer.clientPeer = null
-    }
 
     private suspend fun send(message: ByteArray) {
         withContext(dispatcher) {
@@ -73,34 +71,32 @@ class ClientPeer(
     }
 
     private suspend fun receive() {
-        runBlocking {
-            try {
-                readChannel.readAndSetMessageLength()
-                val code = readChannel.readInt()
-                println("PeerClient received: Message code:" + code + " Packet Size:" + (readChannel.packLeft + 4))
+        try {
+            readChannel.readAndSetMessageLength()
+            val code = readChannel.readInt()
+            println("PeerClient received: Message code:" + code + " Packet Size:" + (readChannel.packLeft + 4))
 
-                when (code) {
-                    4 -> receiveSharesRequest()
-                    //5 -> receiveSharesReply()
-                    8 -> receiveSearchRequest()
-                    9 -> receiveSearchReply()
-                    15 -> receiveInfoRequest()
-                    16 -> receiveInfoReply()
-                    36 -> receiveFolderContentsRequest()
-                    37 -> receiveFolderContentsReply()
-                    40 -> receiveTransferRequest()
-                    41 -> receiveTransferReply()
-                    43 -> receiveQueueDownload()
-                    44 -> receivePlaceInQueueReply()
-                    46 -> receiveUploadFailed()
-                    50 -> receiveQueueFailed()
-                    51 -> receivePlaceInQueueRequest()
-                    52 -> receiveUploadQueueNotification()
-                }
-            } catch (e: EOFException) {
-                println("EOFException ! $peer")
-                throw e
+            when (code) {
+                4 -> receiveSharesRequest()
+                //5 -> receiveSharesReply()
+                8 -> receiveSearchRequest()
+                9 -> receiveSearchReply()
+                15 -> receiveInfoRequest()
+                16 -> receiveInfoReply()
+                36 -> receiveFolderContentsRequest()
+                37 -> receiveFolderContentsReply()
+                40 -> receiveTransferRequest()
+                41 -> receiveTransferReply()
+                43 -> receiveQueueDownload()
+                44 -> receivePlaceInQueueReply()
+                46 -> receiveUploadFailed()
+                50 -> receiveQueueFailed()
+                51 -> receivePlaceInQueueRequest()
+                52 -> receiveUploadQueueNotification()
             }
+            readChannel.skipPackLeft()
+        } catch (e: Exception) {
+            throw e
         }
     }
     /*
@@ -198,17 +194,25 @@ class ClientPeer(
 
 
     private suspend fun receiveSearchReply() {
+        val messageDeflated = ByteArray(readChannel.packLeft)
+        readChannel.byteReadChannel.readFully(messageDeflated, 0, readChannel.packLeft)
+
+        val inflater = Inflater()
+        inflater.setInput(messageDeflated)
+
+        val buffer = ByteArray(1024)
+        val outputStream = ByteArrayOutputStream()
+
+        while (!inflater.finished()) {
+            val count = inflater.inflate(buffer)
+            outputStream.write(buffer, 0, count)
+        }
+        val inflatedReadChannel = SoulInputStream(ByteReadChannel(outputStream.toByteArray()))
+
         val soulFiles = arrayListOf<SoulFile>()
 
-        //val inflatedInputStream = DataInputStream(InflaterInputStream(readChannel.byteReadChannel))
-
-        val readIntLittleEndian = readChannel.byteReadChannel.deflated().readIntLittleEndian()
-        val buffer = ByteArray(readIntLittleEndian)
-        readChannel.byteReadChannel.deflated().readFully(buffer, 0, readIntLittleEndian)
-
-        /*
-        val user = readChannel.readString(inflatedInputStream)
-        val ticket = readChannel.readInt(inflatedInputStream)
+        val user = inflatedReadChannel.readString()
+        val ticket = inflatedReadChannel.readInt()
         var path = ""
         var size: Long
         var extension = ""
@@ -219,19 +223,19 @@ class ClientPeer(
         val avgSpeed: Int
         val queueLength: Long
         if (true /*TODO search the ticket*/) {
-            val nResults = readChannel.readInt(inflatedInputStream)
+            val nResults = inflatedReadChannel.readInt()
             for (i in 0 until nResults) {
-                readChannel.readBoolean(inflatedInputStream) //unused
-                path = readChannel.readString(inflatedInputStream).replace("\\", "/")
-                size = readChannel.readLong(inflatedInputStream)
-                extension = readChannel.readString(inflatedInputStream)
-                val nAttr = readChannel.readInt(inflatedInputStream)
+                inflatedReadChannel.readBoolean() //unused
+                path = inflatedReadChannel.readString().replace("\\", "/")
+                size = inflatedReadChannel.readLong()
+                extension = inflatedReadChannel.readString()
+                val nAttr = inflatedReadChannel.readInt()
                 for (j in 0 until nAttr) {
-                    when (val posAttr = readChannel.readInt(inflatedInputStream)) {
-                        0 -> bitrate = readChannel.readInt(inflatedInputStream)
-                        1 -> duration = readChannel.readInt(inflatedInputStream)
-                        2 -> vbr = readChannel.readInt(inflatedInputStream)
-                        else -> readChannel.readInt(inflatedInputStream)
+                    when (val posAttr = inflatedReadChannel.readInt()) {
+                        0 -> bitrate = inflatedReadChannel.readInt()
+                        1 -> duration = inflatedReadChannel.readInt()
+                        2 -> vbr = inflatedReadChannel.readInt()
+                        else -> inflatedReadChannel.readInt()
                     }
                 }
                 var filename = ""
@@ -258,9 +262,9 @@ class ClientPeer(
                     )
                 )
             }
-            slotsFree = readChannel.readBoolean(inflatedInputStream)
-            avgSpeed = readChannel.readInt(inflatedInputStream)
-            queueLength = readChannel.readLong(inflatedInputStream)
+            slotsFree = inflatedReadChannel.readBoolean()
+            avgSpeed = inflatedReadChannel.readInt()
+            queueLength = inflatedReadChannel.readLong()
 
             peer.soulFiles = soulFiles
             peer.slotsFree = slotsFree
@@ -272,8 +276,6 @@ class ClientPeer(
             if (!peer.soulFiles.isNullOrEmpty())
                 PeerRepository.addOrUpdatePeer(peer)
         }
-
-         */
     }
 
 
@@ -663,4 +665,10 @@ class ClientPeer(
         return bytes.copyOfRange(4, 8)
     }
 
+    fun onSocketDisconnected() {
+        println("Disconnected of $peer")
+        this.peer.clientPeer = null
+    }
+
 }
+

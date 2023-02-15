@@ -1,5 +1,6 @@
 package api
 
+import fr.sercurio.soulseek.SoulSeekApi
 import fr.sercurio.soulseek.repositories.LoginRepository
 import fr.sercurio.soulseek.repositories.PeerRepository
 import fr.sercurio.soulseek.repositories.RoomRepository
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import kotlin.random.Random
 
-/*
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ApiTests {
     private lateinit var soulSeekApi: SoulSeekApi
@@ -41,7 +42,7 @@ class ApiTests {
     @Test
     fun shouldPeersTryToConnectUs() {
         runBlocking {
-            soulSeekApi.serverClient.fileSearch("Shpongle")
+            soulSeekApi.clientSoul.fileSearch("Shpongle")
             delay(1000)
             //assertTrue(PeerWaitingConnectRepository.getPeersWaitingConnect().isNotEmpty())
         }
@@ -50,7 +51,7 @@ class ApiTests {
     @Test
     fun shouldReceiveConnectToPeerWith_P_Type() {
         runBlocking {
-            soulSeekApi.serverClient.userSearch(
+            soulSeekApi.clientSoul.userSearch(
                 "Airmess",
                 Random.nextInt(Integer.MAX_VALUE),
                 "Stupeflip vite"
@@ -63,7 +64,7 @@ class ApiTests {
     @Test
     fun shouldFindFilesOnThisUser() {
         runBlocking {
-            soulSeekApi.serverClient.userSearch(
+            soulSeekApi.clientSoul.userSearch(
                 "asiku",
                 Random.nextInt(Integer.MAX_VALUE),
                 "Flute Fruit"
@@ -73,10 +74,8 @@ class ApiTests {
             val user = PeerRepository.peers["asiku"]
             println(user?.soulFiles)
             user
-                ?.clientSocket
+                ?.clientPeer
                 ?.transferRequest(0, user.token, user.soulFiles!![0], null)
         }
     }
 }
-
- */

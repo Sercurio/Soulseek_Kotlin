@@ -117,7 +117,6 @@ class ClientSoul
                 1001 -> receiveCannotConnect()
             }
             readChannel.skipPackLeft()
-
         } catch (e: Exception) {
             throw e
         }
@@ -283,16 +282,17 @@ class ClientSoul
         val token = readChannel.readInt()
         readChannel.readBoolean()
 
-        if (type == "P") PeerRepository.initiateClientSocket(
-            PeerApiModel(
-                username, type, ip, port, token
+        CoroutineScope(Dispatchers.Default).launch {
+            if (type == "P") PeerRepository.initiateClientSocket(
+                PeerApiModel(
+                    username, type, ip, port, token
+                )
+            ) else if (type == "F") PeerRepository.initiateTransferSocket(
+                PeerApiModel(
+                    username, type, ip, port, token
+                )
             )
-        ) else if (type == "F") PeerRepository.initiateTransferSocket(
-            PeerApiModel(
-                username, type, ip, port, token
-            )
-        )
-
+        }
     }
 
     private fun receivePrivateMessages() {/*val ID = soulInput.readInt()
