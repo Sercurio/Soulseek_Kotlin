@@ -3,25 +3,51 @@ package fr.sercurio.soulseek.client
 import fr.sercurio.soulseek.entities.ByteMessage
 import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.SoulFile
-import fr.sercurio.soulseek.repositories.PeerRepository
 import fr.sercurio.soulseek.toInt
-import kotlinx.coroutines.runBlocking
 import fr.sercurio.soulseek.utils.SoulStack
+import io.ktor.network.selector.*
+import io.ktor.network.sockets.*
 import io.ktor.util.*
 import io.ktor.utils.io.*
+import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
-import java.io.DataInputStream
 import java.io.EOFException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.zip.Inflater
-import java.util.zip.InflaterInputStream
 
 
-class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.port) {
+class ClientPeer(
+    private val peer: PeerApiModel, private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) {
+    private val tag = SoulSocket::class.java.name
+
+    private val selectorManager = ActorSelectorManager(dispatcher)
+    private var socket: Socket? = null
+    private var writeChannel: ByteWriteChannel? = null
+    private lateinit var readChannel: SoulInputStream
     private val askedFiles = mutableMapOf<String, SoulFile>()
 
-    override suspend fun onSocketConnected() {
+    init {
+        runBlocking {
+            connect()
+            GlobalScope.launch {
+                while (true) {
+                    receive()
+                }
+            }
+            onSocketConnected()
+        }
+    }
+
+    private suspend fun connect() {
+        val socket = aSocket(selectorManager).tcp().connect(InetSocketAddress(peer.host, peer.port))
+        this@ClientPeer.socket = socket
+        this@ClientPeer.writeChannel = socket.openWriteChannel(autoFlush = true)
+        this@ClientPeer.readChannel = SoulInputStream(socket.openReadChannel())
+    }
+
+    private suspend fun onSocketConnected() {
         println("Connected to $peer")
 
         pierceFirewall(peer.token)
@@ -33,13 +59,20 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
         fileSearchRequest(peer.token, actualSearch)
     }
 
-    override fun onSocketDisconnected() {
+    fun onSocketDisconnected() {
         println("Disconnected of $peer")
-        this.peer.clientSocket = null
-        this.stop()
+        this.peer.clientPeer = null
     }
 
-    override fun onMessageReceived() {
+    private suspend fun send(message: ByteArray) {
+        withContext(dispatcher) {
+            val writeChannel = this@ClientPeer.writeChannel ?: throw IllegalStateException("Socket not connected")
+            val buffer = ByteBuffer.wrap(message)
+            writeChannel.writeFully(buffer)
+        }
+    }
+
+    private suspend fun receive() {
         runBlocking {
             try {
                 readChannel.readAndSetMessageLength()
@@ -431,7 +464,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
     suspend fun pierceFirewall(token: Int) {
-        sendMessage(
+        send(
             ByteMessage()
                 .writeInt8(0)
                 .writeInt32(token)
@@ -440,7 +473,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
     suspend fun peerInit(username: String, connectionType: String, token: Int) {
-        sendMessage(
+        send(
             ByteMessage().writeInt8(1)
                 .writeStr(username)
                 .writeStr(connectionType) //.writeInt(300)
@@ -451,7 +484,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
 
 
     private suspend fun getShareFileList() {
-        sendMessage(
+        send(
             ByteMessage()
                 .writeInt8(4)
                 .getBuff()
@@ -459,7 +492,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
     suspend fun fileSearchRequest(token: Int, query: String) {
-        sendMessage(
+        send(
             ByteMessage()
                 .writeInt8(8)
                 .writeInt32(token)
@@ -470,7 +503,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
 
 
     private suspend fun userInfoRequest() {
-        sendMessage(ByteMessage().writeInt8(15).getBuff())
+        send(ByteMessage().writeInt8(15).getBuff())
     }
 
     /*getShareFileList: () => new Message().int32(4),
@@ -549,7 +582,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
                 println("size shouldn't be null when responding transferRequest")
                 return
             }
-        sendMessage(msgTransfer.getBuff())
+        send(msgTransfer.getBuff())
     }
 
     suspend fun downloadReply(ticket: Int, allowed: Boolean, reason: String?) {
@@ -561,12 +594,12 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
         if (!allowed)
             msg.writeStr(reason ?: "no reason")
 
-        sendMessage(msg.getBuff())
+        send(msg.getBuff())
     }
 
 
     suspend fun queueDownload(soulFile: SoulFile) {
-        sendMessage(
+        send(
             ByteMessage()
                 .writeInt32(43)
                 .writeStr(soulFile.path)
@@ -575,7 +608,7 @@ class ClientSocket(private val peer: PeerApiModel) : SoulSocket(peer.host, peer.
     }
 
     suspend fun placeInQueueRequest(filename: String) {
-        sendMessage(
+        send(
             ByteMessage()
                 .writeInt32(51)
                 .writeStr(filename)

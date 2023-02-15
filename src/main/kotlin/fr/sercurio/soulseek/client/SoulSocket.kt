@@ -3,54 +3,49 @@ package fr.sercurio.soulseek.client
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.nio.ByteBuffer
 
 
 abstract class SoulSocket(
-    private val host: String, private val port: Int
+    private val host: String, private val port: Int, private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     private val tag = SoulSocket::class.java.name
 
+    private val selectorManager = ActorSelectorManager(dispatcher)
+    private var socket: Socket? = null
+    private var writeChannel: ByteWriteChannel? = null
     lateinit var readChannel: SoulInputStream
-    private lateinit var writeChannel: ByteWriteChannel
 
-    var connected = false
-
-    suspend fun run() {
-        try {
-            val selectorManager = SelectorManager(Dispatchers.IO)
-            val socket = aSocket(selectorManager).tcp().connect(host, port)
-            readChannel = SoulInputStream(socket.openReadChannel())
-            writeChannel = socket.openWriteChannel(autoFlush = true)
-
+    suspend fun connect() {
+        withContext(dispatcher) {
+            val socket = aSocket(selectorManager).tcp().connect(InetSocketAddress(host, port))
+            this@SoulSocket.socket = socket
+            this@SoulSocket.writeChannel = socket.openWriteChannel(autoFlush = true)
+            this@SoulSocket.readChannel = SoulInputStream(socket.openReadChannel())
             onSocketConnected()
-            connected = true
-
-            while (connected) {
-
-                onMessageReceived()
-                readChannel.checkPackLeft()
-            }
-        } catch (e: Exception) {
-            println(
-                "Error + $e\n" +
-                        "host:${host}\nport:${port}"
-            )
-            onSocketDisconnected()
-        } finally {
-            connected = false
         }
     }
 
-    suspend fun sendMessage(message: ByteArray) {
-        writeChannel.write { it.put(message) }
+    suspend fun receive() {
+        onMessageReceived()
     }
 
-    fun stop() {
-        connected = false
+    suspend fun send(message: ByteArray) {
+        withContext(dispatcher) {
+            val writeChannel = this@SoulSocket.writeChannel ?: throw IllegalStateException("Socket not connected")
+            val buffer = ByteBuffer.wrap(message)
+            writeChannel.writeFully(buffer)
+        }
+    }
+
+    fun close() {
+        socket?.close()
     }
 
     abstract suspend fun onSocketConnected()
     abstract fun onSocketDisconnected()
-    abstract fun onMessageReceived()
+    abstract suspend fun onMessageReceived()
 }

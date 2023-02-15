@@ -1,10 +1,10 @@
 package fr.sercurio.soulseek
 
-import fr.sercurio.soulseek.client.ServerClient
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 
+/*
 class SoulSeekApi(login: String, password: String, listenPort: Int, host: String, port: Int) {
     var serverClient: ServerClient
 
@@ -24,3 +24,4 @@ suspend fun main() {
         )
     }
 }
+ */

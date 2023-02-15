@@ -93,4 +93,8 @@ class SoulInputStream(val byteReadChannel: ByteReadChannel) {
             throw IOException("Overrun on packet reading!, packleft: $packLeft")
         }
     }
+
+    suspend fun skipPackLeft() {
+        byteReadChannel.discardExact(this.packLeft.toLong())
+    }
 }

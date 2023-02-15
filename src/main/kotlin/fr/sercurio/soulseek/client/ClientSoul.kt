@@ -1,45 +1,71 @@
 package fr.sercurio.soulseek.client
 
-
 import fr.sercurio.soulseek.entities.*
 import fr.sercurio.soulseek.repositories.LoginRepository
 import fr.sercurio.soulseek.repositories.PeerRepository
 import fr.sercurio.soulseek.repositories.RoomRepository
 import fr.sercurio.soulseek.toMD5
 import fr.sercurio.soulseek.utils.SoulStack
-import kotlinx.coroutines.runBlocking
+import io.ktor.network.selector.*
+import io.ktor.network.sockets.*
+import io.ktor.utils.io.*
+import kotlinx.coroutines.*
+import java.nio.ByteBuffer
 import kotlin.random.Random
 
-class ServerClient(
+class ClientSoul
+    (
     private val login: String,
     private val password: String,
     private val listenPort: Int,
-    host: String,
-    port: Int
-) : SoulSocket(host, port) {
+    private val host: String,
+    private val port: Int,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) {
+    private val tag = SoulSocket::class.java.name
 
+    private val selectorManager = ActorSelectorManager(dispatcher)
+    private var socket: Socket? = null
+    private var writeChannel: ByteWriteChannel? = null
+    private lateinit var readChannel: SoulInputStream
 
     init {
         runBlocking {
-            super.run()
+            connect()
+            GlobalScope.launch {
+                while (true) {
+                    receive()
+                }
+            }
+            onSocketConnected()
         }
     }
 
-    override suspend fun onSocketConnected() {
+    private suspend fun connect() {
+        val socket = aSocket(selectorManager).tcp().connect(InetSocketAddress(host, port))
+        this@ClientSoul.socket = socket
+        this@ClientSoul.writeChannel = socket.openWriteChannel(autoFlush = true)
+        this@ClientSoul.readChannel = SoulInputStream(socket.openReadChannel())
+    }
+
+    private suspend fun onSocketConnected() {
         login(login, password)
         setListenPort(listenPort)
     }
 
-    override fun onSocketDisconnected() {
-        println("Disconnected from Server")
+    private suspend fun send(message: ByteArray) {
+        withContext(dispatcher) {
+            val writeChannel = this@ClientSoul.writeChannel ?: throw IllegalStateException("Socket not connected")
+            val buffer = ByteBuffer.wrap(message)
+            writeChannel.writeFully(buffer)
+        }
     }
 
-    override fun onMessageReceived() {
-        runBlocking {
+    private suspend fun receive() {
+        try {
             readChannel.readAndSetMessageLength()
-
-            //this.packLeft = soulInput.readInt()
             val code = readChannel.readInt()
+
             println("ServerClient received: Message code:" + code + " Packet Size:" + (readChannel.packLeft + 4))
             when (code) {
                 1 -> receiveLogin()
@@ -90,6 +116,10 @@ class ServerClient(
                 152 -> receivePublicChat()
                 1001 -> receiveCannotConnect()
             }
+            readChannel.skipPackLeft()
+
+        } catch (e: Exception) {
+            throw e
         }
     }
 
@@ -105,7 +135,6 @@ class ServerClient(
 
         } else {
             val reason: String = readChannel.readString()
-            this.connected = false
             println("Login Failed:$reason")
         }
     }
@@ -147,8 +176,7 @@ class ServerClient(
     }
 
 
-    private fun receiveJoinRoom() {
-        /*var i: Int
+    private fun receiveJoinRoom() {/*var i: Int
         val room = soulInput.readString()
         val nUsers = soulInput.readInt()
         val users = arrayOfNulls<String>(nUsers)
@@ -229,9 +257,7 @@ class ServerClient(
 
         RoomRepository.addRoomMessage(
             RoomMessageApiModel(
-                room,
-                "SYSTEM",
-                "$username has joined the room."
+                room, "SYSTEM", "$username has joined the room."
             )
         )
     }
@@ -243,9 +269,7 @@ class ServerClient(
 
         RoomRepository.addRoomMessage(
             RoomMessageApiModel(
-                roomName,
-                "SYSTEM",
-                "$username has left the room."
+                roomName, "SYSTEM", "$username has left the room."
             )
         )
     }
@@ -259,30 +283,19 @@ class ServerClient(
         val token = readChannel.readInt()
         readChannel.readBoolean()
 
-        if (type == "P")
-            PeerRepository.initiateClientSocket(
-                PeerApiModel(
-                    username,
-                    type,
-                    ip,
-                    port,
-                    token
-                )
-            ) else if (type == "F")
-            PeerRepository.initiateTransferSocket(
-                PeerApiModel(
-                    username,
-                    type,
-                    ip,
-                    port,
-                    token
-                )
+        if (type == "P") PeerRepository.initiateClientSocket(
+            PeerApiModel(
+                username, type, ip, port, token
             )
+        ) else if (type == "F") PeerRepository.initiateTransferSocket(
+            PeerApiModel(
+                username, type, ip, port, token
+            )
+        )
 
     }
 
-    private fun receivePrivateMessages() {
-        /*val ID = soulInput.readInt()
+    private fun receivePrivateMessages() {/*val ID = soulInput.readInt()
         val timestamp = soulInput.readInt()
         val username = soulInput.readString()
         val message = soulInput.readString()
@@ -300,8 +313,7 @@ class ServerClient(
     }
 
 
-    private fun receiveFileSearch() {
-        /*val username = soulInput.readString()
+    private fun receiveFileSearch() {/*val username = soulInput.readString()
         val ticket = soulInput.readInt()
         val query = soulInput.readString()
         val time = System.currentTimeMillis()
@@ -326,8 +338,7 @@ class ServerClient(
         println("ping from server.")
     }
 
-    private fun receiveKickedFromServer() {
-        /*Util.toast(this, "You were kicked from the server.")
+    private fun receiveKickedFromServer() {/*Util.toast(this, "You were kicked from the server.")
         this.service.logout()*/
     }
 
@@ -376,8 +387,7 @@ class ServerClient(
     }
 
 
-    private fun receiveGetUserInterests() {
-        /*var i: Int
+    private fun receiveGetUserInterests() {/*var i: Int
         val user = soulInput.readString()
         val nLikes = soulInput.readInt()
         var likes = String()
@@ -405,8 +415,7 @@ class ServerClient(
     }
 
 
-    private fun receivePrivilegedUsers() {
-        /*val nUsers = soulInput.readInt()
+    private fun receivePrivilegedUsers() {/*val nUsers = soulInput.readInt()
         this.service.privilegedUsers.clear()
         for (i in 0 until nUsers) {
             this.service.privilegedUsers.add(soulInput.readString())
@@ -486,8 +495,7 @@ class ServerClient(
     }
 
 
-    private fun receiveRoomTickers() {
-        /*var i: Int
+    private fun receiveRoomTickers() {/*var i: Int
         val room = soulInput.readString()
         val nUsers = soulInput.readInt()
         val user = arrayOfNulls<String>(nUsers)
@@ -517,8 +525,7 @@ class ServerClient(
     }
 
 
-    private fun receiveUserPrivileges() {
-        /* val user = soulInput.readString()
+    private fun receiveUserPrivileges() {/* val user = soulInput.readString()
          if (soulInput.readBoolean()) {
              if (!this.service.privilegedUsers.contains(user)) {
                  this.service.privilegedUsers.add(user)
@@ -569,8 +576,7 @@ class ServerClient(
     }
 
 
-    private fun receiveNewPassword() {
-        /*val password = soulInput.readString()
+    private fun receiveNewPassword() {/*val password = soulInput.readString()
         Util.toast(this, "Password Successfully Changed.")*/
     }
 
@@ -621,89 +627,57 @@ class ServerClient(
 
     /* SENT TO SERVER */
     private suspend fun login(login: String, pwd: String) {
-        sendMessage(
-            ByteMessage().writeInt32(1)
-                .writeStr(login)
-                .writeStr(pwd)
-                .writeInt32(160)
-                .writeStr((login + pwd).toMD5())
-                .writeInt32(1)
-                .getBuff()
+        send(
+            ByteMessage().writeInt32(1).writeStr(login).writeStr(pwd).writeInt32(160).writeStr((login + pwd).toMD5())
+                .writeInt32(1).getBuff()
         )
     }
 
     private suspend fun setListenPort(port: Int) {
-        sendMessage(
-            ByteMessage()
-                .writeInt32(2)
-                .getBuff()
+        send(
+            ByteMessage().writeInt32(2).getBuff()
         )
     }
 
     suspend fun getPeerAddressByUsername(username: String) {
-        sendMessage(
-            ByteMessage()
-                .writeInt32(3)
-                .writeStr(username)
-                .getBuff()
+        send(
+            ByteMessage().writeInt32(3).writeStr(username).getBuff()
         )
     }
 
     private suspend fun addUser(username: String) {
-        sendMessage(
-            ByteMessage()
-                .writeInt32(5)
-                .writeStr(username)
-                .getBuff()
+        send(
+            ByteMessage().writeInt32(5).writeStr(username).getBuff()
         )
     }
 
     suspend fun joinRoom(roomName: String /*Room room*/) {
-        sendMessage(
-            ByteMessage()
-                .writeInt32(14)
-                .writeStr(roomName /*room.getName()*/)
-                .getBuff()
+        send(
+            ByteMessage().writeInt32(14).writeStr(roomName /*room.getName()*/).getBuff()
         )
     }
 
     private suspend fun setStatus(status: Int) {
-        sendMessage(
-            ByteMessage()
-                .writeInt32(28)
-                .writeInt32(status)
-                .getBuff()
+        send(
+            ByteMessage().writeInt32(28).writeInt32(status).getBuff()
         )
     }
 
     private suspend fun sharedFoldersFiles(folderCount: Int, fileCount: Int) {
-        sendMessage(
-            ByteMessage()
-                .writeInt32(26)
-                .writeInt32(folderCount)
-                .writeInt32(fileCount)
-                .getBuff()
+        send(
+            ByteMessage().writeInt32(26).writeInt32(folderCount).writeInt32(fileCount).getBuff()
         )
     }
 
     private suspend fun haveNoParents(flag: Int) {
-        sendMessage(
-            ByteMessage()
-                .writeInt32(71)
-                .writeInt32(flag)
-                .getBuff()
+        send(
+            ByteMessage().writeInt32(71).writeInt32(flag).getBuff()
         )
     }
 
     private suspend fun parentIp(ip: IntArray) {
-        sendMessage(
-            ByteMessage()
-                .writeInt32(73)
-                .writeInt8(ip[0])
-                .writeInt8(ip[1])
-                .writeInt8(ip[2])
-                .writeInt8(ip[3])
-                .getBuff()
+        send(
+            ByteMessage().writeInt32(73).writeInt8(ip[0]).writeInt8(ip[1]).writeInt8(ip[2]).writeInt8(ip[3]).getBuff()
         )
     }
 
@@ -713,12 +687,9 @@ class ServerClient(
         SoulStack.actualSearchToken = token
         println("search: ${SoulStack.searches[SoulStack.actualSearchToken]}, token: ${SoulStack.actualSearchToken}")
 
-        sendMessage(
-            ByteMessage()
-                .writeInt32(26)
-                .writeInt32(token)
-                .writeStr(query)
-                .getBuff()
+
+        send(
+            ByteMessage().writeInt32(26).writeInt32(token).writeStr(query).getBuff()
         )
     }
 
@@ -726,22 +697,14 @@ class ServerClient(
         val token = Random.nextInt(Integer.MAX_VALUE)
         SoulStack.searches[token] = query
         SoulStack.actualSearchToken = token
-        sendMessage(
-            ByteMessage()
-                .writeInt32(42)
-                .writeStr(username)
-                .writeInt32(ticket)
-                .writeStr(query)
-                .getBuff()
+        send(
+            ByteMessage().writeInt32(42).writeStr(username).writeInt32(ticket).writeStr(query).getBuff()
         )
     }
 
     suspend fun sendRoomMessage(roomMessageApiModel: RoomMessageApiModel) {
-        sendMessage(
-            ByteMessage()
-                .writeInt32(13)
-                .writeStr(roomMessageApiModel.room)
-                .writeStr(roomMessageApiModel.message)
+        send(
+            ByteMessage().writeInt32(13).writeStr(roomMessageApiModel.room).writeStr(roomMessageApiModel.message)
                 .getBuff()
         )
     }
@@ -761,8 +724,7 @@ class ServerClient(
         for (room in publicRooms) {
             room.nbUsers = readChannel.readInt()
         }
-        rooms.addAll(publicRooms)
-        /*
+        rooms.addAll(publicRooms)/*
                 val ownedRooms = arrayListOf<RoomApiModel>()
                 val nbOwnedRooms = soulInput.readInt()
                 for (j in 0 until nbOwnedRooms) {
@@ -821,5 +783,13 @@ class ServerClient(
                 rooms.addAll(operatedRooms)
         */
         RoomRepository.setRooms(rooms)
+    }
+
+    fun onSocketDisconnected() {
+        println("Disconnected from Server")
+    }
+
+    fun close() {
+        socket?.close()
     }
 }
