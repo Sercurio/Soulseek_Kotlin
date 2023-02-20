@@ -5,14 +5,20 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import fr.sercurio.saoul_seek.slsk_android.R
-import kotlinx.android.synthetic.main.activity_splash.*
+import fr.sercurio.saoul_seek.slsk_android.R.layout.activity_splash
+import fr.sercurio.saoul_seek.slsk_android.databinding.ActivitySplashBinding
 
 class SplashActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySplashBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
 
-        webView.loadUrl("file:///android_res/drawable/soulseek.gif")
+        binding = ActivitySplashBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        binding.webView.loadUrl("file:///android_res/drawable/soulseek.gif")
 
         Handler().postDelayed({
             val mainIntent = Intent(this@SplashActivity, SettingsActivity::class.java)

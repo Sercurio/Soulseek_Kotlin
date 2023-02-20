@@ -13,11 +13,16 @@ import fr.sercurio.saoul_seek.custom_view.recycler_view.RecyclerRoomMessageAdapt
 import fr.sercurio.saoul_seek.models.Room
 import fr.sercurio.saoul_seek.models.RoomMessage
 import fr.sercurio.saoul_seek.slsk_android.R
+import fr.sercurio.saoul_seek.slsk_android.databinding.FragmentRoomBinding
 import fr.sercurio.saoul_seek.utils.AndroidUiHelper
-import kotlinx.android.synthetic.main.fragment_room.*
 
 
 class RoomFragment : Fragment() {
+    private var _binding: FragmentRoomBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
+
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var roomMessageAdapter: RecyclerRoomMessageAdapter
     private var roomMessageList: ArrayList<RoomMessage> = ArrayList()
@@ -27,56 +32,55 @@ class RoomFragment : Fragment() {
 
     private lateinit var roomFragmentInterface: RoomFragmentInterface
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_room, container, false)
-        /*
-        rootView.setOnTouchListener { view, ev ->
-            view.performClick()
-            hideKeyboard(context as Activity?)
-            false
-        }
-         fonctionne pas */
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentRoomBinding.inflate(inflater, container, false)
+        val view = binding.root
 
         /* RecyclerView */
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerView)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         linearLayoutManager = LinearLayoutManager(this.context)
         recyclerView.layoutManager = linearLayoutManager
         roomMessageAdapter = RecyclerRoomMessageAdapter(roomMessageList)
         recyclerView.adapter = roomMessageAdapter
 
         /* Spinner */
-        val roomSpinner = rootView.findViewById<Spinner>(R.id.roomSpinner)
-        simpleSpinnerAdapter = ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, roomNamesList).apply {
-            setNotifyOnChange(true)
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
+        val roomSpinner = view.findViewById<Spinner>(R.id.roomSpinner)
+        simpleSpinnerAdapter =
+            ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, roomNamesList).apply {
+                setNotifyOnChange(true)
+                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            }
         roomSpinner.adapter = simpleSpinnerAdapter
         roomSpinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val roomName = parent.getItemAtPosition(position).toString()
-                if (roomName !== "")
-                    roomFragmentInterface.onRoomSpinnerItemSelected(roomName)
+                if (roomName !== "") roomFragmentInterface.onRoomSpinnerItemSelected(roomName)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        val sendButton = rootView.findViewById<Button>(R.id.sendButton)
+        val sendButton = view.findViewById<Button>(R.id.sendButton)
         sendButton.setOnClickListener {
             AndroidUiHelper.hideKeyboard(activity)
-            roomFragmentInterface.onRoomMessageSend(RoomMessage(roomSpinner.selectedItem.toString(), "ME", messageEdit.text.toString()))
-            messageEdit.setText("")
+            roomFragmentInterface.onRoomMessageSend(
+                RoomMessage(
+                    roomSpinner.selectedItem.toString(), "ME", binding.messageEdit.text.toString()
+                )
+            )
+            binding.messageEdit.setText("")
         }
 
-        return rootView
+        return view
     }
 
     fun setRoomList(roomList: ArrayList<Room>) {
         for (room in roomList) {
             roomNamesList.add(room.name)
         }
-        roomSpinner.adapter = simpleSpinnerAdapter
+        binding.roomSpinner.adapter = simpleSpinnerAdapter
     }
 
     fun addRoomMessage(roomMessage: RoomMessage) {

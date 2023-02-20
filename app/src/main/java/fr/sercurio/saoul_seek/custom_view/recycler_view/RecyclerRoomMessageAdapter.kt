@@ -3,13 +3,14 @@ package fr.sercurio.saoul_seek.custom_view.recycler_view
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fr.sercurio.saoul_seek.inflate
 import fr.sercurio.saoul_seek.models.RoomMessage
 import fr.sercurio.saoul_seek.slsk_android.R
-import kotlinx.android.synthetic.main.recyclerview_item_room_message.view.*
 
-class RecyclerRoomMessageAdapter(private val roomMessages: ArrayList<RoomMessage>) : RecyclerView.Adapter<RecyclerRoomMessageAdapter.RoomMessageHolder>() {
+class RecyclerRoomMessageAdapter(private val roomMessages: ArrayList<RoomMessage>) :
+    RecyclerView.Adapter<RecyclerRoomMessageAdapter.RoomMessageHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoomMessageHolder {
         val inflatedView = parent.inflate(R.layout.recyclerview_item_room_message, false)
         return RoomMessageHolder(inflatedView)
@@ -38,8 +39,8 @@ class RecyclerRoomMessageAdapter(private val roomMessages: ArrayList<RoomMessage
         }
 
         fun bindRoomMessage(roomMessage: RoomMessage) {
-            view.usernameView.text = roomMessage.username
-            view.messageView.text = roomMessage.message
+            view.findViewById<TextView>(R.id.usernameView).text = roomMessage.username
+            view.findViewById<TextView>(R.id.messageView).text = roomMessage.message
         }
     }
 }

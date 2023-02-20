@@ -10,9 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import fr.sercurio.saoul_seek.SoulActivity
 import fr.sercurio.saoul_seek.slsk_android.BuildConfig
-import fr.sercurio.saoul_seek.slsk_android.R
+import fr.sercurio.saoul_seek.slsk_android.databinding.ActivitySettingsBinding
 import fr.sercurio.saoul_seek.utils.AndroidUiHelper
-import kotlinx.android.synthetic.main.activity_settings.*
 import java.io.File
 
 /**
@@ -21,6 +20,8 @@ import java.io.File
  */
 class SettingsActivity : AppCompatActivity() {
     private val tag = SettingsActivity::class.java.toString()
+    private lateinit var binding: ActivitySettingsBinding
+
 
     /* Constants */
     private val loginKey = "key_login"
@@ -33,7 +34,10 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         val sharedPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = sharedPreference.edit()
@@ -44,13 +48,13 @@ class SettingsActivity : AppCompatActivity() {
         appSpecificExternalDir.mkdir()
         editor.putString(downloadDirectory, downloadDefaultDirName)
 
-        goButton?.setOnClickListener {
+        binding.goButton.setOnClickListener {
             if (checkIfSettingsAreEmpty() == 1) return@setOnClickListener
 
-            editor.putString(loginKey, loginText?.text.toString())
-            editor.putString(passwordKey, passwordText?.text.toString())
-            editor.putString(hostKey, hostText?.text.toString())
-            editor.putString(portKey, portText?.text.toString())
+            editor.putString(loginKey, binding.loginText.text.toString())
+            editor.putString(passwordKey, binding.passwordText.text.toString())
+            editor.putString(hostKey, binding.hostText.text.toString())
+            editor.putString(portKey, binding.portText.text.toString())
             editor.apply()
 
             val soulActivity = Intent(this@SettingsActivity, SoulActivity::class.java)
@@ -62,8 +66,7 @@ class SettingsActivity : AppCompatActivity() {
 
     fun browseSharesDirectory(view: View?) {
         // not implemented
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            /*
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {/*
             intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
             startActivityForResult(intent, 0)
             */
@@ -76,13 +79,13 @@ class SettingsActivity : AppCompatActivity() {
      * Mécanisme qui active/désactive les paramètres avancés
      *
      */
-    fun toggleAdvanced(view: View?) {
-        if (advancedCheck?.isChecked!!) {
-            hostText?.isEnabled = true
-            portText?.isEnabled = true
+    fun toggleAdvanced() {
+        if (binding.advancedCheck.isChecked) {
+            binding.hostText.isEnabled = true
+            binding.portText.isEnabled = true
         } else {
-            hostText?.isEnabled = false
-            portText?.isEnabled = false
+            binding.hostText.isEnabled = false
+            binding.portText.isEnabled = false
         }
     }
 
@@ -100,13 +103,15 @@ class SettingsActivity : AppCompatActivity() {
 
         // Check for first run or upgrade
         when {
-            (currentVersionCode == savedVersionCode || currentVersionCode > savedVersionCode) && preferencesAreSaved(sharedPreference) -> {
+            (currentVersionCode == savedVersionCode || currentVersionCode > savedVersionCode) && preferencesAreSaved(
+                sharedPreference
+            ) -> {
                 startActivity(startSoul)
                 settingsActivity.finish()
             }
+
             savedVersionCode == doestExist -> {
-            }
-            /*currentVersionCode > savedVersionCode -> {
+            }/*currentVersionCode > savedVersionCode -> {
             }
             */// TODO This is an upgrade
 
@@ -120,35 +125,42 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun checkIfSettingsAreEmpty(): Int {
         var error = 0
-        if (TextUtils.isEmpty(loginText.text.toString())) {
-            loginText.error = "Login cannot be empty."
+        if (TextUtils.isEmpty(binding.loginText.text.toString())) {
+            binding.loginText.error = "Login cannot be empty."
             error = 1
         }
-        if (TextUtils.isEmpty(passwordText.text.toString())) {
-            passwordText.error = "Password cannot be empty."
+        if (TextUtils.isEmpty(binding.passwordText.text.toString())) {
+            binding.passwordText.error = "Password cannot be empty."
             error = 1
         }
-        if (TextUtils.isEmpty(hostText.text.toString())) {
-            hostText.error = "Host cannot be empty."
+        if (TextUtils.isEmpty(binding.hostText.text.toString())) {
+            binding.hostText.error = "Host cannot be empty."
             error = 1
         }
-        if (TextUtils.isEmpty(portText.text.toString())) {
-            portText.error = "Port cannot be empty."
+        if (TextUtils.isEmpty(binding.portText.text.toString())) {
+            binding.portText.error = "Port cannot be empty."
             error = 1
         }
         return error
     }
 
     private fun preferencesAreSaved(sharedPreference: SharedPreferences): Boolean {
-        Log.d(tag, "login : ${sharedPreference.getString(loginKey, "")}\n" +
-                "pwd: ${sharedPreference.getString(passwordKey, "")}\n" +
-                "host : ${sharedPreference.getString(hostKey, "")}\n" +
-                "port : ${sharedPreference.getString(portKey, "")})")
+        Log.d(
+            tag, "login : ${sharedPreference.getString(loginKey, "")}\n" + "pwd: ${
+                sharedPreference.getString(
+                    passwordKey, ""
+                )
+            }\n" + "host : ${sharedPreference.getString(hostKey, "")}\n" + "port : ${
+                sharedPreference.getString(
+                    portKey, ""
+                )
+            })"
+        )
 
 
-        return !sharedPreference.getString(loginKey, "").equals("") &&
-                !sharedPreference.getString(passwordKey, "").equals("") &&
-                !sharedPreference.getString(hostKey, "").equals("") &&
-                !sharedPreference.getString(portKey, "0").equals("0")
+        return !sharedPreference.getString(loginKey, "").equals("") && !sharedPreference.getString(passwordKey, "")
+            .equals("") && !sharedPreference.getString(hostKey, "").equals("") && !sharedPreference.getString(
+            portKey, "0"
+        ).equals("0")
     }
 }

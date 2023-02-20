@@ -13,6 +13,7 @@ import fr.sercurio.saoul_seek.models.Room
 import fr.sercurio.saoul_seek.models.RoomMessage
 import fr.sercurio.saoul_seek.models.SoulFile
 import fr.sercurio.saoul_seek.slsk_android.R
+import fr.sercurio.saoul_seek.slsk_android.databinding.ActivitySoulBinding
 import fr.sercurio.saoul_seek.socket.PeerManager
 import fr.sercurio.saoul_seek.socket.ServerClient
 import fr.sercurio.saoul_seek.ui.fragments.PreferencesFragment
@@ -22,7 +23,6 @@ import fr.sercurio.saoul_seek.ui.fragments.child.SearchChildFragment
 import fr.sercurio.saoul_seek.ui.fragments.child.SearchChildFragment.SearchChildInterface
 import fr.sercurio.saoul_seek.utils.Bytes
 import fr.sercurio.saoul_seek.utils.SoulStack
-import kotlinx.android.synthetic.main.activity_soul.*
 
 
 /**
@@ -30,6 +30,9 @@ import kotlinx.android.synthetic.main.activity_soul.*
  */
 @AndroidEntryPoint
 class SoulActivity : AppCompatActivity(), ServerClient.ServerSocketInterface, PeerManager.PeerSocketManagerInterface, SearchChildInterface, RoomFragment.RoomFragmentInterface {
+    private lateinit var binding: ActivitySoulBinding
+
+
     /* Fragments */
     private val roomFragment = RoomFragment()
     private val searchFragment = SearchFragment()
@@ -54,13 +57,16 @@ class SoulActivity : AppCompatActivity(), ServerClient.ServerSocketInterface, Pe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_soul)
+
+        binding = ActivitySoulBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         setCurrentFragment(roomFragment)
 
         val sharedPreference = PreferenceManager.getDefaultSharedPreferences(this)
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
 
         /*CoroutineScope(IO).launch {
             Log.d("IPLocal", Utils.getIPAddress(true))

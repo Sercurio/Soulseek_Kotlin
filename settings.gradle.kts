@@ -11,7 +11,6 @@ rootProject.name = "Soulseek_Library"
 include("app")
 include("api")
 
-
 pluginManagement {
     /**
      * The pluginManagement {repositories {...}} block configures the
