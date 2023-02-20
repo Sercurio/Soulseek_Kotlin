@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">SaoulSeek</string>
+    <string name="loginHint">Login</string>
+    <string name="passwordHint">Password</string>
+    <string name="loginTitle">SaoulSeek</string>
+    <string name="goButton">Go</string>
+    <string name="title_activity_soul">SoulActivity</string>
+    <string name="tab_text_1">Search</string>
+    <string name="tab_text_2">Chat</string>
+    <string name="hostDefault">server.slsknet.org</string>
+    <string name="advancedCheck">Advanced</string>
+
+    <string name="send">Send</string>
+    <string name="message">Message</string>
+    <string name="transfer">TRANSFER</string>
+
+    <string name="user">userName</string>
+    <string name="userMessage">userMessage</string>
+
+    <string name="search">search</string>
+    <string name="room">room</string>
+    <string name="settings">settings</string>
+    <string name="sharedfolder">SharedFolder</string>
+    <string name="saoulseek">SaoulSeek</string>
+    <string name="crash_toast_text">¯\_(ツ)_/¯</string>
+    <string name="browse">Browse</string>
+    <string name="filename">filename</string>
+    <string name="size">size</string>
+    <string name="bitrate">bitrate</string>
+    <string name="duration">duration</string>
+
+    <string name="bitrate_format">%1$d %2$s</string>
+</resources>

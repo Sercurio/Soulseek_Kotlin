@@ -1,0 +1,48 @@
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <androidx.preference.PreferenceCategory android:title="User">
+        <androidx.preference.EditTextPreference
+            android:defaultValue=""
+            android:dialogMessage=""
+            android:key="key_login"
+            android:summary=""
+            android:title="Login" />
+
+        <androidx.preference.EditTextPreference
+            android:defaultValue=""
+            android:dialogMessage=""
+            android:key="key_password"
+            android:summary=""
+            android:title="Password" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory android:title="Server">
+        <androidx.preference.EditTextPreference
+            android:defaultValue="server.slsknet.org"
+            android:dialogMessage=""
+            android:key="key_host"
+            android:summary=""
+            android:title="Host" />
+
+        <androidx.preference.EditTextPreference
+            android:defaultValue="2242"
+            android:dialogMessage=""
+            android:key="port_key"
+            android:summary=""
+            android:title="Port" />
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>
+
+    <!--<android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue=""
+        android:key="login"
+        android:summary="Switch Summary"
+        android:title="Switch Preference" />
+
+    <android.support.v7.preference.CheckBoxPreference
+        android:defaultValue="true"
+        android:key="key3"
+        android:summary="CheckBox Summary"
+        android:title="CheckBox Preference" />
+</android.support.v7.preference.PreferenceCategory>-->
