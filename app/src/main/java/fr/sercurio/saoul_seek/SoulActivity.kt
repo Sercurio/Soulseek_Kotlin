@@ -23,6 +23,7 @@ import fr.sercurio.saoul_seek.ui.fragments.child.SearchChildFragment
 import fr.sercurio.saoul_seek.ui.fragments.child.SearchChildFragment.SearchChildInterface
 import fr.sercurio.saoul_seek.utils.Bytes
 import fr.sercurio.saoul_seek.utils.SoulStack
+import fr.sercurio.soulseek.SoulSeekApi
 
 
 /**
@@ -31,7 +32,6 @@ import fr.sercurio.saoul_seek.utils.SoulStack
 @AndroidEntryPoint
 class SoulActivity : AppCompatActivity(), ServerClient.ServerSocketInterface, PeerManager.PeerSocketManagerInterface, SearchChildInterface, RoomFragment.RoomFragmentInterface {
     private lateinit var binding: ActivitySoulBinding
-
 
     /* Fragments */
     private val roomFragment = RoomFragment()
