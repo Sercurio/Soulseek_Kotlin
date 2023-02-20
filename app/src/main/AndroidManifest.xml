@@ -5,7 +5,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:name="fr.sercurio.saoul_seek.SoulApplication"
+        android:name="fr.sercurio.soulseek.SoulApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name="fr.sercurio.saoul_seek.ui.activities.SplashActivity"
+            android:name="soulseek.ui.activities.SplashActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">
@@ -25,13 +25,13 @@
         </activity>
 
         <activity
-            android:name="fr.sercurio.saoul_seek.ui.activities.SettingsActivity"
+            android:name="soulseek.ui.activities.SettingsActivity"
             android:label="@string/title_activity_soul"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
 
         <activity
-            android:name="fr.sercurio.saoul_seek.SoulActivity"
+            android:name="fr.sercurio.soulseek.SoulActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />

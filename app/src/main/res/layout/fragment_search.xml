@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="fr.sercurio.saoul_seek.SoulActivity">
+    tools:context="fr.sercurio.soulseek.SoulActivity">
 
 
     <com.google.android.material.tabs.TabLayout

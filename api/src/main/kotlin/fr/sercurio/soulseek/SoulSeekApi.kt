@@ -12,6 +12,10 @@ class SoulSeekApi(login: String, password: String, listenPort: Int, host: String
     init {
         clientSoul = ClientSoul(login, password, listenPort, host, port)
     }
+
+    open fun onLogin(){
+
+    }
 }
 
 suspend fun main() {

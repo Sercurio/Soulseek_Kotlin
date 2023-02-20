@@ -5,7 +5,7 @@
     android:id="@+id/child_request_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fr.sercurio.saoul_seek.SoulActivity">
+    tools:context="fr.sercurio.soulseek.SoulActivity">
 
     <ProgressBar
         android:id="@+id/progressBar"

@@ -34,7 +34,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.28-alpha")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
     implementation(project(":api"))
 }
