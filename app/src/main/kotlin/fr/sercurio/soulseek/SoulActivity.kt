@@ -3,32 +3,42 @@ package fr.sercurio.soulseek
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationBarView
 import dagger.hilt.android.AndroidEntryPoint
 import fr.sercurio.saoul_seek.slsk_android.R
 import fr.sercurio.saoul_seek.slsk_android.databinding.ActivitySoulBinding
-import fr.sercurio.soulseek.ui.fragments.PreferencesFragment
-import fr.sercurio.soulseek.ui.fragments.RoomFragment
-import fr.sercurio.soulseek.ui.fragments.SearchFragment
-import soulseek.ui.fragments.child.SearchChildFragment
-import soulseek.ui.fragments.child.SearchChildFragment.SearchChildInterface
-import fr.sercurio.soulseek.utils.Bytes
-import soulseek.utils.SoulStack
 import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.RoomApiModel
 import fr.sercurio.soulseek.entities.RoomMessageApiModel
 import fr.sercurio.soulseek.entities.SoulFile
+import fr.sercurio.soulseek.ui.fragments.PreferencesFragment
+import fr.sercurio.soulseek.ui.fragments.RoomFragment
+import fr.sercurio.soulseek.ui.fragments.SearchFragment
+import fr.sercurio.soulseek.utils.Bytes
+import fr.sercurio.soulseek.viewmodel.LoginViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import soulseek.ui.fragments.child.SearchChildFragment
+import soulseek.ui.fragments.child.SearchChildFragment.SearchChildInterface
+import soulseek.utils.SoulStack
 
 
 /**
  * Créé et codé par Louis Penalva tout droits réservés.
  */
 @AndroidEntryPoint
-class SoulActivity : AppCompatActivity()
-SearchChildInterface, RoomFragment.RoomFragmentInterface {
+class SoulActivity : AppCompatActivity(),
+    SearchChildInterface,
+    RoomFragment.RoomFragmentInterface {
+
     private lateinit var binding: ActivitySoulBinding
 
     /* Fragments */
@@ -65,21 +75,30 @@ SearchChildInterface, RoomFragment.RoomFragmentInterface {
 
         binding.bottomNavigationView.setOnItemSelectedListener(onNavigationItemSelectedListener)
 
-        /*CoroutineScope(IO).launch {
-            Log.d("IPLocal", Utils.getIPAddress(true))
-            Log.d("IPInternet", Utils.getPublicIp())
-        }*/
-        /*CoroutineScope(IO).launch {
-            val peerServer = PeerServer(2234)
-        }*/
+        val viewModel: LoginViewModel by viewModels()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect {
+                    println(viewModel.uiState.value.connected.toString())
+                    Toast.makeText(applicationContext, "Connected !", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
-        soulSeekApi = SoulSeekApi(
+        CoroutineScope(Dispatchers.IO).launch {
+            soulSeekApi = SoulSeekApi(
+                "DebugApp",
+                "159753",
+            )
+
+            /*SoulSeekApi(
             sharedPreference.getString("key_login", "")!!,
             sharedPreference.getString("key_password", "")!!,
             5001,
             sharedPreference.getString("key_host", "")!!,
             sharedPreference.getString("key_port", "0")!!.toInt()
-        )
+        ) */
+        }
     }
 
 

@@ -28,7 +28,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta01")
 
-    implementation("ch.acra:acra:4.9.0")
+    implementation("ch.acra:acra-mail:5.9.7")
+    implementation("ch.acra:acra-toast:5.9.7")
 
     implementation("com.google.android.material:material:1.8.0")
     implementation("com.google.dagger:hilt-android:2.28-alpha")
@@ -37,4 +38,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
     implementation(project(":api"))
+    implementation("androidx.test.ext:junit:1.1.5")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+
 }

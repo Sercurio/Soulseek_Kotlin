@@ -1,40 +1,0 @@
-
-qkotlin:S6306%"TUsing "GlobalScope" here leads to the breaking of structured concurrency principles.(š£Œúÿÿÿÿ
-Jkotlin:S11358"2Complete the task associated to this TODO comment.(Ó¥†í
-Pkotlin:S1135á"2Complete the task associated to this TODO comment.(´ˆîŒÿÿÿÿÿ
-Pkotlin:S1135ü"2Complete the task associated to this TODO comment.(õ»ÎÚıÿÿÿÿ
-Kkotlin:S1135"2Complete the task associated to this TODO comment.(ïõªˆ
-Hkotlin:S1481¼"*Remove this unused "query" local variable.(ÏÉÜ¯ùÿÿÿÿ
-Ikotlin:S1481»"+Remove this unused "ticket" local variable.(ù·¶ÿÿÿÿÿ
-Ikotlin:S1481×"+Remove this unused "ticket" local variable.(úçÔÆûÿÿÿÿ
-Akotlin:S1481Ö")Remove this unused "user" local variable.(ƒò
-Ekotlin:S1481ê",Remove this unused "posAttr" local variable.(ò¿ğ‹
-Lkotlin:S1481¥".Remove this unused "slotsfree" local variable.(“µ•Ëùÿÿÿÿ
-Gkotlin:S1481¤".Remove this unused "queuesize" local variable.(´ÂæÔ
-Fkotlin:S1481£"-Remove this unused "totalupl" local variable.(ñ·¯İ
-Ikotlin:S1481Ÿ"0Remove this unused "description" local variable.(Ò©Â
-Ekotlin:S1481¡",Remove this unused "picture" local variable.(Ò—²
-Ikotlin:S1481"+Remove this unused "ticket" local variable.(ù·¶ÿÿÿÿÿ
-Fkotlin:S1481”"-Remove this unused "filesize" local variable.(€ÊºØ
-Ekotlin:S1481"-Remove this unused "filename" local variable.(ùºô
-Bkotlin:S1481´")Remove this unused "path" local variable.(†õšç
-Ekotlin:S1481¹",Remove this unused "msgInit" local variable.(êöÿ¢
-2kotlin:S1128"Remove this unused import.(é¤ì˜
-7kotlin:S1128"Remove this unused import.(ú¹ØÅøÿÿÿÿ
-;kotlin:S125:"Remove this commented out code.(ŒéË‚üÿÿÿÿ
-7kotlin:S125"Remove this commented out code.(–±Ù
-<kotlin:S125½"Remove this commented out code.(ëŸé„úÿÿÿÿ
-7kotlin:S125§"Remove this commented out code.(ÿÓ”
-7kotlin:S125º"Remove this commented out code.(ÄÏ
-<kotlin:S125Ÿ"Remove this commented out code.(¼‘Ë ùÿÿÿÿ
-<kotlin:S125¥"Remove this commented out code.(àšåÀÿÿÿÿÿ
-7kotlin:S125º"Remove this commented out code.(ö¡Áî
-7kotlin:S125"Remove this commented out code.(Ó¼€
-kkotlin:S3776Ä"RRefactor this method to reduce its Cognitive Complexity from 21 to the 15 allowed.(ÉÛÙç
-Ekotlin:S1144Ç",Remove this unused private "deflate" method.(¬…è 
-Skotlin:S1144è"5Remove this unused private "getShareFileList" method.(ñÜÃ£üÿÿÿÿ
-Lkotlin:S1144û"4Remove this unused private "userInfoRequest" method.(ô“†|
-Mkotlin:S1144•"4Remove this unused private "fromUnsignedInt" method.(Ëµé‡
-Akotlin:S1145á"#Remove this useless "if" statement.(´ˆîŒÿÿÿÿÿ
-xkotlin:S1186š"ZAdd a nested comment explaining why this function is empty or complete the implementation.(ÉæÈ²şÿÿÿÿ
-xkotlin:S1186Ã"ZAdd a nested comment explaining why this function is empty or complete the implementation.(ëîıÏşÿÿÿÿ

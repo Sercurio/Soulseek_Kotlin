@@ -32,7 +32,7 @@ class ClientSoul
     init {
         runBlocking {
             connect()
-            GlobalScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 while (true) {
                     receive()
                 }

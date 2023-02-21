@@ -15,8 +15,8 @@ import fr.sercurio.saoul_seek.slsk_android.databinding.FragmentRoomBinding
 import fr.sercurio.soulseek.entities.RoomApiModel
 import fr.sercurio.soulseek.entities.RoomMessageApiModel
 import fr.sercurio.soulseek.utils.AndroidUiHelper
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 
@@ -64,7 +64,7 @@ class RoomFragment : Fragment() {
         roomSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                GlobalScope.launch(Dispatchers.IO) {
+                CoroutineScope(Dispatchers.IO).launch {
                     val roomName = parent?.getItemAtPosition(position).toString()
                     if (roomName !== "") roomFragmentInterface.onRoomSpinnerItemSelected(roomName)
                 }
@@ -74,7 +74,7 @@ class RoomFragment : Fragment() {
         val sendButton = view.findViewById<Button>(R.id.sendButton)
         sendButton.setOnClickListener {
             AndroidUiHelper.hideKeyboard(activity)
-            GlobalScope.launch(Dispatchers.IO) {
+            CoroutineScope(Dispatchers.IO).launch {
                 roomFragmentInterface.onRoomMessageSend(
                     RoomMessageApiModel(
                         roomSpinner.selectedItem.toString(), "ME", binding.messageEdit.text.toString()

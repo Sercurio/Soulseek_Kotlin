@@ -16,8 +16,8 @@ import fr.sercurio.saoul_seek.slsk_android.R
 import fr.sercurio.soulseek.utils.AndroidUiHelper
 import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.SoulFile
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 
@@ -51,7 +51,7 @@ class SearchChildFragment : Fragment() {
 
                 lastSearch = query
 
-                GlobalScope.launch(Dispatchers.IO) {
+                CoroutineScope(Dispatchers.IO).launch {
                     searchChildInterface.onQueryChangeListener(query)
                 }
                 AndroidUiHelper.hideKeyboard(parentFragment?.activity)
@@ -78,7 +78,7 @@ class SearchChildFragment : Fragment() {
             Log.d(tag, "\n$peer,\n$soulFile")
             searchChildInterface.onSoulfileDownloadQuery(peer, soulFile)
             //peer.socketPeer?.peerInit(peer.username, "P", Bytes.randomBytes(4))
-            GlobalScope.launch(Dispatchers.IO) {
+            CoroutineScope(Dispatchers.IO).launch {
                 peer.clientPeer?.transferRequest(0, peer.token, soulFile, null)
             }
         }

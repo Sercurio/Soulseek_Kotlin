@@ -22,7 +22,6 @@
     <string name="settings">settings</string>
     <string name="sharedfolder">SharedFolder</string>
     <string name="saoulseek">SaoulSeek</string>
-    <string name="crash_toast_text">¯\_(ツ)_/¯</string>
     <string name="browse">Browse</string>
     <string name="filename">filename</string>
     <string name="size">size</string>
@@ -30,4 +29,5 @@
     <string name="duration">duration</string>
 
     <string name="bitrate_format">%1$d %2$s</string>
+    <string name="acra_toast_text">¯\_(ツ)_/¯</string>
 </resources>

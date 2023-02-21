@@ -34,7 +34,7 @@ class ClientPeer(
         runBlocking {
             connect()
             onSocketConnected()
-            GlobalScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 while (true) {
                     receive()
                 }
