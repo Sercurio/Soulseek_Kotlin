@@ -1,7 +1,6 @@
 package fr.sercurio.soulseek.viewmodel
 
 import androidx.lifecycle.ViewModel
-import fr.sercurio.soulseek.SoulSeekApi
 import fr.sercurio.soulseek.entities.LoginApiModel
 import fr.sercurio.soulseek.repositories.LoginRepository
 import kotlinx.coroutines.flow.MutableStateFlow

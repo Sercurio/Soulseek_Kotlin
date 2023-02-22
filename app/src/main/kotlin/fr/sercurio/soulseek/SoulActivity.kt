@@ -76,7 +76,10 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    println(it.connected)
+                    Toast.makeText(
+                        applicationContext,
+                        if (it.connected) "Connected" else "Not connected", Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }

@@ -9,29 +9,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5c7b07d6-f9cd-47f4-a559-f7508f5714a0" name="Changes" comment="WIP">
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/2/a/2afbb999f001938c88fa43fc2ef52abf0f8213e4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sonarlint/issuestore/index.pb" afterDir="false" />
+    <list default="true" id="5c7b07d6-f9cd-47f4-a559-f7508f5714a0" name="Changes" comment="Bteere coroutines">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/SoulSeekApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/SoulSeekApi.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/repositories/LoginRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/repositories/LoginRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/fr/sercurio/saoul_seek/slsk_android/ExampleInstrumentedTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/fr/sercurio/saoul_seek/slsk_android/ExampleInstrumentedTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/SoulActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/SoulActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/SoulApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/SoulApplication.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/custom_view/expandable_list_view/ExpandableSoulResultsAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/custom_view/expandable_list_view/ExpandableSoulResultsAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/custom_view/recycler_view/RecyclerRoomMessageAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/custom_view/recycler_view/RecyclerRoomMessageAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/activities/SettingsActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/activities/SettingsActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/activities/SplashActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/activities/SplashActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/fragments/PreferencesFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/fragments/PreferencesFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/fragments/RoomFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/fragments/RoomFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/fragments/SearchFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/fragments/SearchFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/fragments/child/SearchChildFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/ui/fragments/child/SearchChildFragment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/test/kotlin/UnitTests.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/test/kotlin/UnitTests.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/viewmodel/LoginViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/viewmodel/LoginViewModel.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -290,7 +271,7 @@
       <workItem from="1676989884335" duration="3443000" />
       <workItem from="1676994321530" duration="3824000" />
       <workItem from="1677055171448" duration="454000" />
-      <workItem from="1677058059938" duration="3387000" />
+      <workItem from="1677058059938" duration="5089000" />
     </task>
     <task id="LOCAL-00001" summary="MultiModules">
       <created>1676892979778</created>
@@ -334,7 +315,14 @@
       <option name="project" value="LOCAL" />
       <updated>1676996129899</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Bteere coroutines">
+      <created>1677062346242</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1677062346242</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -357,18 +345,8 @@
     <MESSAGE value="Depndencies between two modules" />
     <MESSAGE value="Cleanup" />
     <MESSAGE value="WIP" />
-    <option name="LAST_COMMIT_MESSAGE" value="WIP" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/repositories/LoginRepository.kt</url>
-          <line>13</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Bteere coroutines" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bteere coroutines" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
