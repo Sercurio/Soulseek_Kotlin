@@ -20,7 +20,7 @@ class ApiTests {
 
     @BeforeAll
     fun initializeApi() {
-        soulSeekApi = SoulSeekApi("DebugApp", "159753")
+        soulSeekApi = object : SoulSeekApi("DebugApp", "159753"){}
     }
 
     @Test

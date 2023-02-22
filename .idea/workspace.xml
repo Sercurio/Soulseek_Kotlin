@@ -9,10 +9,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5c7b07d6-f9cd-47f4-a559-f7508f5714a0" name="Changes" comment="Bteere coroutines">
+    <list default="true" id="5c7b07d6-f9cd-47f4-a559-f7508f5714a0" name="Changes" comment="Need work on callback from APi">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/SoulActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/SoulActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/viewmodel/LoginViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/viewmodel/LoginViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/SoulSeekApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/SoulSeekApi.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/client/ClientSoul.kt" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/client/ClientSoul.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/test/kotlin/api/ApiTests.kt" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/test/kotlin/api/ApiTests.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +123,7 @@
       <recent name="C:\DevHome\Code\Soulseek_Library\app" />
     </key>
   </component>
-  <component name="RunManager" selected="Android App.app">
+  <component name="RunManager" selected="Kotlin.SoulSeekApiKt">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
       <module name="Soulseek_Library.app.main" />
       <option name="DEPLOY" value="true" />
@@ -241,8 +242,16 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="SoulSeekApiKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="fr.sercurio.soulseek.SoulSeekApiKt" />
+      <module name="Soulseek_Library.api.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Kotlin.SoulSeekApiKt" />
         <item itemvalue="Gradle.UnitTests.soulseekApiLogin" />
         <item itemvalue="Gradle.Soulseek_Library:app [assemble]" />
         <item itemvalue="Gradle.ApiTests.shouldSuccessLogin" />
@@ -271,7 +280,7 @@
       <workItem from="1676989884335" duration="3443000" />
       <workItem from="1676994321530" duration="3824000" />
       <workItem from="1677055171448" duration="454000" />
-      <workItem from="1677058059938" duration="5089000" />
+      <workItem from="1677058059938" duration="10411000" />
     </task>
     <task id="LOCAL-00001" summary="MultiModules">
       <created>1676892979778</created>
@@ -322,7 +331,14 @@
       <option name="project" value="LOCAL" />
       <updated>1677062346242</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Need work on callback from APi">
+      <created>1677063704765</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1677063704765</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -346,7 +362,8 @@
     <MESSAGE value="Cleanup" />
     <MESSAGE value="WIP" />
     <MESSAGE value="Bteere coroutines" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bteere coroutines" />
+    <MESSAGE value="Need work on callback from APi" />
+    <option name="LAST_COMMIT_MESSAGE" value="Need work on callback from APi" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

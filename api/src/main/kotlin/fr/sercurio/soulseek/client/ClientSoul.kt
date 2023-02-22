@@ -21,13 +21,15 @@ class ClientSoul
     private val host: String,
     private val port: Int,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) {
+){
     private val tag = SoulSocket::class.java.name
 
     private val selectorManager = ActorSelectorManager(dispatcher)
     private var socket: Socket? = null
     private var writeChannel: ByteWriteChannel? = null
     private lateinit var readChannel: SoulInputStream
+
+    // Callback Functions
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -134,7 +136,6 @@ class ClientSoul
             //serverSocketInterface.onLogin(1, "connected", ip.toString())
 
             LoginRepository.setLoginStatus(LoginApiModel(true, ""))
-
         } else {
             val reason: String = readChannel.readString()
             println("Login Failed:$reason")
