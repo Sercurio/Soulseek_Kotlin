@@ -31,10 +31,13 @@ class ClientPeer(
     private val askedFiles = mutableMapOf<String, SoulFile>()
 
     init {
-        runBlocking {
-            connect()
+        CoroutineScope(Dispatchers.IO).launch {
+            launch {
+                connect()
+            }.join()
             onSocketConnected()
-            CoroutineScope(Dispatchers.IO).launch {
+
+            launch {
                 while (true) {
                     receive()
                 }

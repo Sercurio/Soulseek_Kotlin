@@ -1,13 +1,14 @@
 plugins {
     id("com.android.application") version "7.2.2" apply true
     id("com.android.library") version "7.4.0-beta02" apply false
-    id("org.jetbrains.kotlin.android") version "1.7.20" apply true
+    id("org.jetbrains.kotlin.android") version "1.8.20-Beta" apply true
 }
 
 android {
+    namespace = "fr.sercurio.soulseek"
     compileSdkVersion(33)
     defaultConfig {
-        minSdkVersion(19)
+        minSdkVersion(21)
         applicationId = "fr.sercurio.soulseek.app"
         versionCode = 1
         versionName = "1.0"
@@ -15,6 +16,10 @@ android {
     }
     buildFeatures {
         viewBinding = true
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_19
+        targetCompatibility = JavaVersion.VERSION_19
     }
 }
 

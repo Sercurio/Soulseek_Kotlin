@@ -12,8 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationBarView
 import dagger.hilt.android.AndroidEntryPoint
-import fr.sercurio.saoul_seek.slsk_android.R
-import fr.sercurio.saoul_seek.slsk_android.databinding.ActivitySoulBinding
+import fr.sercurio.soulseek.databinding.ActivitySoulBinding
 import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.RoomApiModel
 import fr.sercurio.soulseek.entities.RoomMessageApiModel
@@ -23,9 +22,7 @@ import fr.sercurio.soulseek.ui.fragments.RoomFragment
 import fr.sercurio.soulseek.ui.fragments.SearchFragment
 import fr.sercurio.soulseek.utils.Bytes
 import fr.sercurio.soulseek.viewmodel.LoginViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import soulseek.ui.fragments.child.SearchChildFragment
 import soulseek.ui.fragments.child.SearchChildFragment.SearchChildInterface
 import soulseek.utils.SoulStack
@@ -35,7 +32,7 @@ import soulseek.utils.SoulStack
  * Créé et codé par Louis Penalva tout droits réservés.
  */
 @AndroidEntryPoint
-class SoulActivity : AppCompatActivity(),
+class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
     SearchChildInterface,
     RoomFragment.RoomFragmentInterface {
 
@@ -79,26 +76,23 @@ class SoulActivity : AppCompatActivity(),
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    println(viewModel.uiState.value.connected.toString())
-                    Toast.makeText(applicationContext, "Connected !", Toast.LENGTH_SHORT).show()
+                    println(it.connected)
                 }
             }
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            soulSeekApi = SoulSeekApi(
-                "DebugApp",
-                "159753",
-            )
+        soulSeekApi = SoulSeekApi(
+            "DebugApp",
+            "159753",
+        )
 
-            /*SoulSeekApi(
-            sharedPreference.getString("key_login", "")!!,
-            sharedPreference.getString("key_password", "")!!,
-            5001,
-            sharedPreference.getString("key_host", "")!!,
-            sharedPreference.getString("key_port", "0")!!.toInt()
-        ) */
-        }
+        /*SoulSeekApi(
+        sharedPreference.getString("key_login", "")!!,
+        sharedPreference.getString("key_password", "")!!,
+        5001,
+        sharedPreference.getString("key_host", "")!!,
+        sharedPreference.getString("key_port", "0")!!.toInt()
+    ) */
     }
 
 

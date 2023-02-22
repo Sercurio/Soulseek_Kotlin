@@ -12,5 +12,4 @@ class LoginViewModel : ViewModel() {
     // Expose screen UI state
     private val _uiState = MutableStateFlow(LoginRepository.getLoginStatus())
     val uiState: StateFlow<LoginApiModel> = _uiState.asStateFlow()
-
 }

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fr.sercurio.soulseek.inflate
-import fr.sercurio.saoul_seek.slsk_android.R
+import fr.sercurio.soulseek.R
 import fr.sercurio.soulseek.entities.RoomMessageApiModel
 
 class RecyclerRoomMessageAdapter(private val roomMessages: ArrayList<RoomMessageApiModel>) :

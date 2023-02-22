@@ -16,12 +16,7 @@ class SoulSeekApi(
     var clientSoul: ClientSoul
 
     init {
-        println("$login $password, $listenPort, $host, $port")
         clientSoul = ClientSoul(login, password, listenPort, host, port)
-    }
-
-    open fun onLogin() {
-
     }
 }
 

@@ -3,7 +3,7 @@ package fr.sercurio.soulseek.ui.fragments
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
-import fr.sercurio.saoul_seek.slsk_android.R
+import fr.sercurio.soulseek.R
 
 class PreferencesFragment : PreferenceFragmentCompat() {
 

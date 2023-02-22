@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.Button
 import android.widget.TextView
-import fr.sercurio.saoul_seek.slsk_android.R
+import fr.sercurio.soulseek.R
 import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.SoulFile
 

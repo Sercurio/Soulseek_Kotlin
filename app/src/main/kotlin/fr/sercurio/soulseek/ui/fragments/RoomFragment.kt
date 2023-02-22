@@ -10,8 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.sercurio.soulseek.custom_view.recycler_view.RecyclerRoomMessageAdapter
-import fr.sercurio.saoul_seek.slsk_android.R
-import fr.sercurio.saoul_seek.slsk_android.databinding.FragmentRoomBinding
+import fr.sercurio.soulseek.R
+import fr.sercurio.soulseek.databinding.FragmentRoomBinding
 import fr.sercurio.soulseek.entities.RoomApiModel
 import fr.sercurio.soulseek.entities.RoomMessageApiModel
 import fr.sercurio.soulseek.utils.AndroidUiHelper

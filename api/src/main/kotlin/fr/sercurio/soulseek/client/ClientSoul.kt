@@ -30,14 +30,17 @@ class ClientSoul
     private lateinit var readChannel: SoulInputStream
 
     init {
-        runBlocking {
-            connect()
-            CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
+            launch {
+                connect()
+            }.join()
+            onSocketConnected()
+
+            launch {
                 while (true) {
                     receive()
                 }
             }
-            onSocketConnected()
         }
     }
 

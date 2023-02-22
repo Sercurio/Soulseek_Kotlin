@@ -8,8 +8,7 @@
  */
 
 rootProject.name = "Soulseek_Library"
-include("app")
-include("api")
+include("app", "api")
 
 pluginManagement {
     /**

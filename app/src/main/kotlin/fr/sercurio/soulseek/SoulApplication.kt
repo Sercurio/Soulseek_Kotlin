@@ -3,8 +3,6 @@ package fr.sercurio.soulseek
 import android.app.Application
 import android.content.Context
 import dagger.hilt.android.HiltAndroidApp
-import fr.sercurio.saoul_seek.slsk_android.R
-import org.acra.ACRA
 import org.acra.BuildConfig
 import org.acra.config.mailSender
 import org.acra.config.toast

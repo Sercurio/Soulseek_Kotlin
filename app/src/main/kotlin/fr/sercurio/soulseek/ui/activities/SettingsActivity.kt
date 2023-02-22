@@ -9,8 +9,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import fr.sercurio.soulseek.SoulActivity
-import fr.sercurio.saoul_seek.slsk_android.BuildConfig
-import fr.sercurio.saoul_seek.slsk_android.databinding.ActivitySettingsBinding
+import fr.sercurio.soulseek.BuildConfig
+import fr.sercurio.soulseek.databinding.ActivitySettingsBinding
 import fr.sercurio.soulseek.utils.AndroidUiHelper
 import java.io.File
 

@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import soulseek.custom_view.ViewPagerAdapter
-import fr.sercurio.saoul_seek.slsk_android.R
+import fr.sercurio.soulseek.R
 import fr.sercurio.soulseek.entities.PeerApiModel
 import soulseek.ui.fragments.child.SearchChildFragment
 

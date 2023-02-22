@@ -12,7 +12,7 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import fr.sercurio.soulseek.custom_view.expandable_list_view.ExpandableSoulResultsAdapter
-import fr.sercurio.saoul_seek.slsk_android.R
+import fr.sercurio.soulseek.R
 import fr.sercurio.soulseek.utils.AndroidUiHelper
 import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.SoulFile
