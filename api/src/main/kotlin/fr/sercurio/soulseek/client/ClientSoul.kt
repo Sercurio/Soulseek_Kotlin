@@ -1,5 +1,6 @@
 package fr.sercurio.soulseek.client
 
+import fr.sercurio.soulseek.SoulseekApiListener
 import fr.sercurio.soulseek.entities.*
 import fr.sercurio.soulseek.repositories.LoginRepository
 import fr.sercurio.soulseek.repositories.PeerRepository
@@ -15,21 +16,20 @@ import kotlin.random.Random
 
 class ClientSoul
     (
+    private val listener: SoulseekApiListener,
     private val login: String,
     private val password: String,
     private val listenPort: Int,
     private val host: String,
     private val port: Int,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-){
+) {
     private val tag = SoulSocket::class.java.name
 
     private val selectorManager = ActorSelectorManager(dispatcher)
     private var socket: Socket? = null
     private var writeChannel: ByteWriteChannel? = null
     private lateinit var readChannel: SoulInputStream
-
-    // Callback Functions
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -132,13 +132,13 @@ class ClientSoul
         if (readChannel.readBoolean()) {
             val greeting = readChannel.readString()
             val ip = readChannel.readInt()
-            println("Logged In.")
             //serverSocketInterface.onLogin(1, "connected", ip.toString())
 
             LoginRepository.setLoginStatus(LoginApiModel(true, ""))
+            listener.onLogin(true, greeting, ip, null)
         } else {
             val reason: String = readChannel.readString()
-            println("Login Failed:$reason")
+            listener.onLogin(false, null, null, reason)
         }
     }
 
@@ -147,7 +147,7 @@ class ClientSoul
         val ip: String = readChannel.readIp()
         val port = readChannel.readInt()
 
-        PeerRepository.addOrUpdatePeer(PeerApiModel(username = username, host = ip, port = port))
+        listener.onGetPeerAddress(username = username, host = ip, port = port)
     }
 
 

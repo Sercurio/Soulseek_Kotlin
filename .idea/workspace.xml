@@ -9,11 +9,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5c7b07d6-f9cd-47f4-a559-f7508f5714a0" name="Changes" comment="Need work on callback from APi">
+    <list default="true" id="5c7b07d6-f9cd-47f4-a559-f7508f5714a0" name="Changes" comment="CallbackInterface Ok !">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/SoulSeekApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/SoulSeekApi.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/SoulSeekApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/SoulseekApi.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/client/ClientSoul.kt" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/kotlin/fr/sercurio/soulseek/client/ClientSoul.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/src/test/kotlin/api/ApiTests.kt" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/test/kotlin/api/ApiTests.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/SoulActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/SoulActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/viewmodel/LoginViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/fr/sercurio/soulseek/viewmodel/LoginViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/test/kotlin/UnitTests.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/test/kotlin/UnitTests.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +103,7 @@
     "WebServerToolWindowFactoryState": "false",
     "android-custom-viewC:/Users/louis_penalva/.gradle/caches/modules-2/files-2.1/com.google.android.material/material/1.8.0/60ab9cfeed56173f0fb0c798009d91e049bbbba1/material-1.8.0-sources.jar!/com/google/android/material/bottomnavigation/BottomNavigationView.java_SELECTED": "BottomNavigationView",
     "jdk.selected.JAVA_MODULE": "19",
-    "ktor.last.update.timestamp": "1676991693293",
+    "ktor.last.update.timestamp": "1677078126096",
     "last_opened_file_path": "C:/DevHome/Code/Soulseek_Library",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -123,7 +126,7 @@
       <recent name="C:\DevHome\Code\Soulseek_Library\app" />
     </key>
   </component>
-  <component name="RunManager" selected="Kotlin.SoulSeekApiKt">
+  <component name="RunManager" selected="Android App.app">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
       <module name="Soulseek_Library.app.main" />
       <option name="DEPLOY" value="true" />
@@ -242,8 +245,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="SoulSeekApiKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="fr.sercurio.soulseek.SoulSeekApiKt" />
+    <configuration name="SoulseekApiKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="fr.sercurio.soulseek.SoulseekApiKt" />
       <module name="Soulseek_Library.api.main" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -251,7 +254,7 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Kotlin.SoulSeekApiKt" />
+        <item itemvalue="Kotlin.SoulseekApiKt" />
         <item itemvalue="Gradle.UnitTests.soulseekApiLogin" />
         <item itemvalue="Gradle.Soulseek_Library:app [assemble]" />
         <item itemvalue="Gradle.ApiTests.shouldSuccessLogin" />
@@ -281,6 +284,7 @@
       <workItem from="1676994321530" duration="3824000" />
       <workItem from="1677055171448" duration="454000" />
       <workItem from="1677058059938" duration="10411000" />
+      <workItem from="1677077064857" duration="2481000" />
     </task>
     <task id="LOCAL-00001" summary="MultiModules">
       <created>1676892979778</created>
@@ -363,7 +367,8 @@
     <MESSAGE value="WIP" />
     <MESSAGE value="Bteere coroutines" />
     <MESSAGE value="Need work on callback from APi" />
-    <option name="LAST_COMMIT_MESSAGE" value="Need work on callback from APi" />
+    <MESSAGE value="CallbackInterface Ok !" />
+    <option name="LAST_COMMIT_MESSAGE" value="CallbackInterface Ok !" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

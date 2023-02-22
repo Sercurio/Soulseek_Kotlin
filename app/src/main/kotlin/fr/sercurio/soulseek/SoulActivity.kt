@@ -47,7 +47,7 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
     private val tag = SoulActivity::class.java.simpleName
 
     /* Managers */
-    private lateinit var soulSeekApi: SoulSeekApi
+    private lateinit var soulseekApi: SoulseekApi
 
     /* BottomNavigationListener */
     private val onNavigationItemSelectedListener = NavigationBarView.OnItemSelectedListener { item ->
@@ -76,20 +76,21 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
-                    Toast.makeText(
-                        applicationContext,
-                        if (it.connected) "Connected" else "Not connected", Toast.LENGTH_SHORT
-                    ).show()
+                    if (it.connected) println("Connected") else println("Not connected")
                 }
             }
         }
 
-        soulSeekApi = SoulSeekApi(
+        soulseekApi = object : SoulseekApi(
             "DebugApp",
             "159753",
-        )
+        ) {
+            override fun onLogin(isConnected: Boolean, greeting: String?, nothing1: Int?, reason: String?) {
+                viewModel.updateConnected(isConnected)
+            }
+        }
 
-        /*SoulSeekApi(
+        /*SoulseekApi(
         sharedPreference.getString("key_login", "")!!,
         sharedPreference.getString("key_password", "")!!,
         5001,
@@ -117,7 +118,7 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
 
     override fun onDestroy() {
         super.onDestroy()
-        soulSeekApi.clientSoul.close()
+        soulseekApi.clientSoul.close()
     }
 
     override fun onBackPressed() {
@@ -137,7 +138,7 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
                 tag,
                 "search: ${SoulStack.searches[SoulStack.actualSearchToken]}, token: ${SoulStack.actualSearchToken}"
             )
-            soulSeekApi.clientSoul.fileSearch(query)
+            soulseekApi.clientSoul.fileSearch(query)
         }
     }
 
@@ -158,11 +159,11 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
     /* UI METHODS */
     /**************/
     override suspend fun onRoomSpinnerItemSelected(roomName: String) {
-        soulSeekApi.clientSoul.joinRoom(roomName)
+        soulseekApi.clientSoul.joinRoom(roomName)
     }
 
     override suspend fun onRoomMessageSend(roomMessage: RoomMessageApiModel) {
-        soulSeekApi.clientSoul.sendRoomMessage(roomMessage)
+        soulseekApi.clientSoul.sendRoomMessage(roomMessage)
     }
 
     /*************************/

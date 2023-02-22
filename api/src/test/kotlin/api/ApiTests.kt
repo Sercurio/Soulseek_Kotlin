@@ -1,6 +1,6 @@
 package api
 
-import fr.sercurio.soulseek.SoulSeekApi
+import fr.sercurio.soulseek.SoulseekApi
 import fr.sercurio.soulseek.repositories.LoginRepository
 import fr.sercurio.soulseek.repositories.PeerRepository
 import fr.sercurio.soulseek.repositories.RoomRepository
@@ -16,11 +16,11 @@ import kotlin.random.Random
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ApiTests {
-    private lateinit var soulSeekApi: SoulSeekApi
+    private lateinit var soulSeekApi: SoulseekApi
 
     @BeforeAll
     fun initializeApi() {
-        soulSeekApi = object : SoulSeekApi("DebugApp", "159753"){}
+    //    soulSeekApi = object : SoulseekApi("DebugApp", "159753"){}
     }
 
     @Test
