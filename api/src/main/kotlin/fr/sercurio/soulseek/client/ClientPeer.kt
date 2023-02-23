@@ -9,15 +9,12 @@ import fr.sercurio.soulseek.toInt
 import fr.sercurio.soulseek.utils.SoulStack
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
-import io.ktor.util.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
-import java.io.EOFException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.zip.Inflater
-import java.util.zip.InflaterInputStream
 
 
 class ClientPeer(
@@ -283,7 +280,9 @@ class ClientPeer(
             println("Received " + nResults + " search results from ${this.peer.username}\n soulfiles : ${peer.soulFiles}")
 
             readChannel.packLeft = 0
-            if (!peer.soulFiles.isNullOrEmpty()) PeerRepository.addOrUpdatePeer(peer)
+            if (!peer.soulFiles.isNullOrEmpty()) {
+                listener.onSearchReply(peer)
+            }
         }
     }
 

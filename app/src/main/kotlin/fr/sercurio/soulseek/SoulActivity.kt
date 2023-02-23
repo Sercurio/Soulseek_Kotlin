@@ -82,25 +82,61 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
                 }
             }
         }
+        try {
 
-        soulseekApi = object : SoulseekApi(
-            sharedPreference.getString("key_login", "")!!,
-            sharedPreference.getString("key_password", "")!!,
-            5001,
-            sharedPreference.getString("key_host", "")!!,
-            sharedPreference.getString("key_port", "0")!!.toInt()
-        ) {
-            override fun onLogin(isConnected: Boolean, greeting: String?, nothing1: Int?, reason: String?) {
-                viewModel.updateConnected(isConnected)
-            }
+            soulseekApi = object : SoulseekApi(
+                sharedPreference.getString("key_login", "")!!,
+                sharedPreference.getString("key_password", "")!!,
+                5001,
+                sharedPreference.getString("key_host", "")!!,
+                sharedPreference.getString("key_port", "0")!!.toInt()
+            ) {
+                override fun onLogin(isConnected: Boolean, greeting: String?, nothing1: Int?, reason: String?) {
+                    viewModel.updateConnected(isConnected)
+                }
 
-            override fun onRoomList(rooms: ArrayList<RoomApiModel>) {
-                this@SoulActivity.onRoomList(rooms)
-            }
+                override fun onRoomList(rooms: ArrayList<RoomApiModel>) {
+                    this@SoulActivity.onRoomList(rooms)
+                }
 
-            override fun onSayInChatRoom(room: String, username: String, message: String) {
-                this@SoulActivity.onRoomMessage(room, username, message)
+                override fun onUserJoinedRoom(
+                    room: String,
+                    username: String,
+                    status: Int,
+                    avgspeed: Int,
+                    downloadNum: Long,
+                    files: Int,
+                    dirs: Int,
+                    slotsFree: Int,
+                    countryCode: String
+                ) {
+                    this@SoulActivity.onUserJoinRoom(
+                        room,
+                        username,
+                        status,
+                        avgspeed,
+                        downloadNum,
+                        files,
+                        dirs,
+                        slotsFree,
+                        countryCode
+                    )
+                }
+
+                override fun onUserLeftRoom(room: String, username: String) {
+                    this@SoulActivity.onUserLeftRoom(room, username)
+                }
+
+                override fun onSayInChatRoom(room: String, username: String, message: String) {
+                    this@SoulActivity.onRoomMessage(room, username, message)
+                }
+
+                override fun onSearchReply(peer: PeerApiModel) {
+                    this@SoulActivity.onSearchReply(peer)
+                }
             }
+        } catch (e: Exception) {
+            println(e)
         }
     }
 
@@ -193,20 +229,20 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
         username: String,
         status: Int,
         averageSpeed: Int,
-        downloadNum: Int,
+        downloadNum: Long,
         nbFiles: Int,
         nbDirectories: Int,
         slotsFree: Int,
         countryCode: String
     ) {
         runOnUiThread {
-            roomFragment.addRoomMessage(RoomMessageApiModel(roomName, username, "a rejoint la room"))
+            roomFragment.addRoomMessage(RoomMessageApiModel(roomName, "~~~", "$username rejoint la room"))
         }
     }
 
     fun onUserLeftRoom(roomName: String, username: String) {
         runOnUiThread {
-            roomFragment.addRoomMessage(RoomMessageApiModel(roomName, username, "a quitté la room"))
+            roomFragment.addRoomMessage(RoomMessageApiModel(roomName, "~~~", "$username a quitté la room"))
         }
     }
 
@@ -223,7 +259,7 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
         TODO("Not yet implemented")
     }
 
-    fun onFileSearchResult(peer: PeerApiModel) {
+    fun onSearchReply(peer: PeerApiModel) {
         runOnUiThread {
             searchFragment.addSoulFiles(peer)
         }

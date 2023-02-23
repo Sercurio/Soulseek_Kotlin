@@ -1,6 +1,7 @@
 package fr.sercurio.soulseek
 
 import fr.sercurio.soulseek.client.ClientSoul
+import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.RoomApiModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -38,8 +39,20 @@ interface SoulseekApiListener {
     fun onSayInChatRoom(room: String, username: String, message: String) {}
     fun onJoinRoom() {}
     fun onLeaveRoom() {}
-    fun onUserJoinedRoom() {}
-    fun onUserLeftRoom() {}
+    fun onUserJoinedRoom(
+        room: String,
+        username: String,
+        status: Int,
+        avgspeed: Int,
+        downloadNum: Long,
+        files: Int,
+        dirs: Int,
+        slotsFree: Int,
+        countryCode: String
+    ) {
+    }
+
+    fun onUserLeftRoom(roomName: String, username: String) {}
     fun onConnectToPeer() {}
     fun onPrivateMessages() {}
     fun onFileSearch() {}
@@ -83,7 +96,7 @@ interface SoulseekApiListener {
     fun onSharesRequest() {}
     fun onSharesReply() {}
     fun onPeerSearchRequest() {}
-    fun onSearchReply() {}
+    fun onSearchReply(peer: PeerApiModel) {}
     fun onInfoRequest() {}
     fun onInfoReply() {}
     fun onFolderContentsRequest() {}

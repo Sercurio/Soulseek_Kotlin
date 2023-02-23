@@ -36,7 +36,7 @@ class ClientSoul
             }.join()
             onSocketConnected()
 
-            launch {
+            withContext(Dispatchers.IO) {
                 while (true) {
                     receive()
                 }
@@ -254,7 +254,7 @@ class ClientSoul
         val slotsFree = readChannel.readInt()
         val countryCode = readChannel.readString()
 
-        listener.onSayInChatRoom(room, "SYSTEM", "$username has joined the room.")
+        listener.onUserJoinedRoom(room, username, status, avgspeed, downloadNum, files, dirs, slotsFree, countryCode)
     }
 
 
@@ -262,7 +262,7 @@ class ClientSoul
         val roomName = readChannel.readString()
         val username = readChannel.readString()
 
-        listener.onSayInChatRoom(roomName, "SYSTEM", "$username has left the room.")
+        listener.onUserLeftRoom(roomName, username)
     }
 
 
@@ -274,7 +274,7 @@ class ClientSoul
         val token = readChannel.readInt()
         readChannel.readBoolean()
 
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             if (type == "P") PeerRepository.initiateClientSocket(
                 listener,
                 PeerApiModel(
