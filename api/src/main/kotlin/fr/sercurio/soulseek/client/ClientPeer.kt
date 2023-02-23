@@ -4,7 +4,6 @@ import fr.sercurio.soulseek.SoulseekApiListener
 import fr.sercurio.soulseek.entities.ByteMessage
 import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.SoulFile
-import fr.sercurio.soulseek.repositories.PeerRepository
 import fr.sercurio.soulseek.toInt
 import fr.sercurio.soulseek.utils.SoulStack
 import io.ktor.network.selector.*
@@ -15,7 +14,6 @@ import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.zip.Inflater
-import kotlin.coroutines.coroutineContext
 
 
 class ClientPeer(
@@ -32,7 +30,10 @@ class ClientPeer(
     private val askedFiles = mutableMapOf<String, SoulFile>()
 
     init {
-        CoroutineScope(Dispatchers.IO).launch {
+        val handler = CoroutineExceptionHandler { _, exception ->
+            println("CoroutineExceptionHandler got $exception")
+        }
+        CoroutineScope(Dispatchers.IO).launch(handler) {
             supervisorScope {
                 launch() {
                     connect()
@@ -280,7 +281,7 @@ class ClientPeer(
             peer.slotsFree = slotsFree
             peer.avgSpeed = avgSpeed
             peer.queueLength = queueLength
-            println("Received " + nResults + " search results from ${this.peer.username}\n soulfiles : ${peer.soulFiles}")
+            println("Received " + nResults + " search results from $peer}")
 
             readChannel.packLeft = 0
             if (!peer.soulFiles.isNullOrEmpty()) {

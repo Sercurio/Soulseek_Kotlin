@@ -30,7 +30,10 @@ class ClientSoul
     private lateinit var readChannel: SoulInputStream
 
     init {
-        CoroutineScope(Dispatchers.IO).launch {
+        val handler = CoroutineExceptionHandler { _, exception ->
+            println("CoroutineExceptionHandler got $exception")
+        }
+        CoroutineScope(Dispatchers.IO).launch(handler) {
             launch {
                 connect()
             }.join()

@@ -170,7 +170,7 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
     /************************/
     /* SearchChildInterface */
     /************************/
-    override suspend fun onQueryChangeListener(query: String?) {
+    override fun onQueryChangeListener(query: String?) {
         val token = ByteBuffer.wrap(Random.nextBytes(4)).order(ByteOrder.LITTLE_ENDIAN).int
 
         if (query != null) {
@@ -180,7 +180,9 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
                 tag,
                 "search: ${SoulStack.searches[SoulStack.actualSearchToken]}, token: ${SoulStack.actualSearchToken}"
             )
-            soulseekApi.clientSoul.fileSearch(query)
+            CoroutineScope(Dispatchers.IO).launch {
+                soulseekApi.clientSoul.fileSearch(query)
+            }
         }
     }
 

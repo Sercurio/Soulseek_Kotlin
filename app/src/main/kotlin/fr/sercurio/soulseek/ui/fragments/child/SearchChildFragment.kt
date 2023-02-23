@@ -20,6 +20,7 @@ import fr.sercurio.soulseek.entities.SoulFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 class SearchChildFragment : Fragment() {
@@ -52,9 +53,8 @@ class SearchChildFragment : Fragment() {
 
                 lastSearch = query
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    searchChildInterface.onQueryChangeListener(query)
-                }
+                searchChildInterface.onQueryChangeListener(query)
+
                 AndroidUiHelper.hideKeyboard(parentFragment?.activity as Activity)
                 progressBar.visibility = View.VISIBLE
                 return true
@@ -114,7 +114,7 @@ class SearchChildFragment : Fragment() {
     }
 
     interface SearchChildInterface {
-        suspend fun onQueryChangeListener(query: String?)
+        fun onQueryChangeListener(query: String?)
         fun onSoulfileDownloadQuery(peer: PeerApiModel, soulFile: SoulFile)
     }
 }
