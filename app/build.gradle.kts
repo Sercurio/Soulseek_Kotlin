@@ -8,7 +8,7 @@ android {
     namespace = "fr.sercurio.soulseek"
     compileSdkVersion(33)
     defaultConfig {
-        minSdkVersion(21)
+        minSdkVersion(25)
         applicationId = "fr.sercurio.soulseek.app"
         versionCode = 1
         versionName = "1.0"
@@ -18,8 +18,8 @@ android {
         viewBinding = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_16
+        targetCompatibility = JavaVersion.VERSION_16
     }
 }
 
@@ -33,14 +33,16 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta01")
 
-    implementation("ch.acra:acra-mail:5.9.7")
-    implementation("ch.acra:acra-toast:5.9.7")
-
     implementation("com.google.android.material:material:1.8.0")
     implementation("com.google.dagger:hilt-android:2.28-alpha")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+
+    implementation("ch.acra:acra-mail:5.9.7")
+    implementation("ch.acra:acra-toast:5.9.7")
+
+    implementation("pl.droidsonroids.gif:android-gif-drawable:1.2.25")
 
     implementation(project(":api"))
     implementation("androidx.test.ext:junit:1.1.5")

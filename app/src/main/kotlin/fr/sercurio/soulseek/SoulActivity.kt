@@ -20,12 +20,14 @@ import fr.sercurio.soulseek.entities.SoulFile
 import fr.sercurio.soulseek.ui.fragments.PreferencesFragment
 import fr.sercurio.soulseek.ui.fragments.RoomFragment
 import fr.sercurio.soulseek.ui.fragments.SearchFragment
-import fr.sercurio.soulseek.utils.Bytes
 import fr.sercurio.soulseek.viewmodel.LoginViewModel
 import kotlinx.coroutines.*
 import soulseek.ui.fragments.child.SearchChildFragment
 import soulseek.ui.fragments.child.SearchChildFragment.SearchChildInterface
 import soulseek.utils.SoulStack
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import kotlin.random.Random
 
 
 /**
@@ -82,21 +84,24 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
         }
 
         soulseekApi = object : SoulseekApi(
-            "DebugApp",
-            "159753",
+            sharedPreference.getString("key_login", "")!!,
+            sharedPreference.getString("key_password", "")!!,
+            5001,
+            sharedPreference.getString("key_host", "")!!,
+            sharedPreference.getString("key_port", "0")!!.toInt()
         ) {
             override fun onLogin(isConnected: Boolean, greeting: String?, nothing1: Int?, reason: String?) {
                 viewModel.updateConnected(isConnected)
             }
-        }
 
-        /*SoulseekApi(
-        sharedPreference.getString("key_login", "")!!,
-        sharedPreference.getString("key_password", "")!!,
-        5001,
-        sharedPreference.getString("key_host", "")!!,
-        sharedPreference.getString("key_port", "0")!!.toInt()
-    ) */
+            override fun onRoomList(rooms: ArrayList<RoomApiModel>) {
+                this@SoulActivity.onRoomList(rooms)
+            }
+
+            override fun onSayInChatRoom(room: String, username: String, message: String) {
+                this@SoulActivity.onRoomMessage(room, username, message)
+            }
+        }
     }
 
 
@@ -130,7 +135,8 @@ class SoulActivity : AppCompatActivity(), CoroutineScope by MainScope(),
     /* SearchChildInterface */
     /************************/
     override suspend fun onQueryChangeListener(query: String?) {
-        val token = Bytes.tokenInt()
+        val token = ByteBuffer.wrap(Random.nextBytes(4)).order(ByteOrder.LITTLE_ENDIAN).int
+
         if (query != null) {
             SoulStack.searches[token] = query
             SoulStack.actualSearchToken = token

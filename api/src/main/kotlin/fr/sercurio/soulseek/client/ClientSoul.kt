@@ -2,9 +2,7 @@ package fr.sercurio.soulseek.client
 
 import fr.sercurio.soulseek.SoulseekApiListener
 import fr.sercurio.soulseek.entities.*
-import fr.sercurio.soulseek.repositories.LoginRepository
 import fr.sercurio.soulseek.repositories.PeerRepository
-import fr.sercurio.soulseek.repositories.RoomRepository
 import fr.sercurio.soulseek.toMD5
 import fr.sercurio.soulseek.utils.SoulStack
 import io.ktor.network.selector.*
@@ -132,9 +130,7 @@ class ClientSoul
         if (readChannel.readBoolean()) {
             val greeting = readChannel.readString()
             val ip = readChannel.readInt()
-            //serverSocketInterface.onLogin(1, "connected", ip.toString())
 
-            LoginRepository.setLoginStatus(LoginApiModel(true, ""))
             listener.onLogin(true, greeting, ip, null)
         } else {
             val reason: String = readChannel.readString()
@@ -175,7 +171,7 @@ class ClientSoul
         val room = readChannel.readString()
         val username = readChannel.readString()
         val message = readChannel.readString()
-        RoomRepository.addRoomMessage(RoomMessageApiModel(room, username, message))
+        listener.onSayInChatRoom(room, username, message)
     }
 
 
@@ -243,7 +239,7 @@ class ClientSoul
 
     private suspend fun receiveLeaveRoom() {
         val room = readChannel.readString()
-        RoomRepository.addRoomMessage(RoomMessageApiModel(room, "SYSTEM", "Leaving room"))
+        listener.onSayInChatRoom(room, "SYSTEM", "Leaving room")
     }
 
 
@@ -258,11 +254,7 @@ class ClientSoul
         val slotsFree = readChannel.readInt()
         val countryCode = readChannel.readString()
 
-        RoomRepository.addRoomMessage(
-            RoomMessageApiModel(
-                room, "SYSTEM", "$username has joined the room."
-            )
-        )
+        listener.onSayInChatRoom(room, "SYSTEM", "$username has joined the room.")
     }
 
 
@@ -270,11 +262,7 @@ class ClientSoul
         val roomName = readChannel.readString()
         val username = readChannel.readString()
 
-        RoomRepository.addRoomMessage(
-            RoomMessageApiModel(
-                roomName, "SYSTEM", "$username has left the room."
-            )
-        )
+        listener.onSayInChatRoom(roomName, "SYSTEM", "$username has left the room.")
     }
 
 
@@ -288,6 +276,7 @@ class ClientSoul
 
         CoroutineScope(Dispatchers.Default).launch {
             if (type == "P") PeerRepository.initiateClientSocket(
+                listener,
                 PeerApiModel(
                     username, type, ip, port, token
                 )
@@ -342,8 +331,10 @@ class ClientSoul
         println("ping from server.")
     }
 
-    private fun receiveKickedFromServer() {/*Util.toast(this, "You were kicked from the server.")
-        this.service.logout()*/
+    private fun receiveKickedFromServer() {
+        listener.onKickedFromServer()
+        // Util.toast(this, "You were kicked from the server.")
+        onSocketDisconnected()
     }
 
 
@@ -786,11 +777,12 @@ class ClientSoul
                 }
                 rooms.addAll(operatedRooms)
         */
-        RoomRepository.setRooms(rooms)
+        listener.onRoomList(rooms)
     }
 
-    fun onSocketDisconnected() {
+    private fun onSocketDisconnected() {
         println("Disconnected from Server")
+        close()
     }
 
     fun close() {

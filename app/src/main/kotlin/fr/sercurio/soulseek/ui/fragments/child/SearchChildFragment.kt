@@ -1,5 +1,6 @@
 package soulseek.ui.fragments.child
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -54,7 +55,7 @@ class SearchChildFragment : Fragment() {
                 CoroutineScope(Dispatchers.IO).launch {
                     searchChildInterface.onQueryChangeListener(query)
                 }
-                AndroidUiHelper.hideKeyboard(parentFragment?.activity)
+                AndroidUiHelper.hideKeyboard(parentFragment?.activity as Activity)
                 progressBar.visibility = View.VISIBLE
                 return true
             }

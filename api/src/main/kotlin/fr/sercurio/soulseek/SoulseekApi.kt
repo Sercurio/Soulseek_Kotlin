@@ -1,6 +1,7 @@
 package fr.sercurio.soulseek
 
 import fr.sercurio.soulseek.client.ClientSoul
+import fr.sercurio.soulseek.entities.RoomApiModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
@@ -29,11 +30,12 @@ suspend fun main() {
 
 
 interface SoulseekApiListener {
+    /* SERVER */
     fun onLogin(isConnected: Boolean, greeting: String?, nothing1: Int?, reason: String?) {}
     fun onGetPeerAddress(username: String, host: String, port: Int) {}
     fun onAddUser() {}
     fun onGetStatus() {}
-    fun onSayInChatRoom() {}
+    fun onSayInChatRoom(room: String, username: String, message: String) {}
     fun onJoinRoom() {}
     fun onLeaveRoom() {}
     fun onUserJoinedRoom() {}
@@ -46,7 +48,7 @@ interface SoulseekApiListener {
     fun onGetRecommendations() {}
     fun onGetGlobalRecommendations() {}
     fun onGetUserInterests() {}
-    fun onRoomList() {}
+    fun onRoomList(rooms: ArrayList<RoomApiModel>) {}
     fun onGlobalAdminMessage() {}
     fun onPrivilegedUsers() {}
     fun onAddPrivilegedUser() {}
@@ -76,4 +78,22 @@ interface SoulseekApiListener {
     fun onPrivateRoomOwned() {}
     fun onPublicChat() {}
     fun onCannotConnect() {}
+
+    /* PEERS */
+    fun onSharesRequest() {}
+    fun onSharesReply() {}
+    fun onPeerSearchRequest() {}
+    fun onSearchReply() {}
+    fun onInfoRequest() {}
+    fun onInfoReply() {}
+    fun onFolderContentsRequest() {}
+    fun onFolderContentsReply() {}
+    fun onTransferRequest() {}
+    fun onTransferReply() {}
+    fun onQueueDownload() {}
+    fun onPlaceInQueueReply() {}
+    fun onUploadFailed() {}
+    fun onQueueFailed() {}
+    fun onPlaceInQueueRequest() {}
+    fun onUploadQueueNotification() {}
 }

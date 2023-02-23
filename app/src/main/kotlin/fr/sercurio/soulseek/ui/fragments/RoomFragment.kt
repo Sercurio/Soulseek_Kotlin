@@ -1,5 +1,6 @@
 package fr.sercurio.soulseek.ui.fragments
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -73,7 +74,7 @@ class RoomFragment : Fragment() {
 
         val sendButton = view.findViewById<Button>(R.id.sendButton)
         sendButton.setOnClickListener {
-            AndroidUiHelper.hideKeyboard(activity)
+            AndroidUiHelper.hideKeyboard(activity as Activity)
             CoroutineScope(Dispatchers.IO).launch {
                 roomFragmentInterface.onRoomMessageSend(
                     RoomMessageApiModel(

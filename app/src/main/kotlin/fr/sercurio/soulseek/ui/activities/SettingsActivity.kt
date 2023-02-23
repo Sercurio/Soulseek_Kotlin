@@ -1,4 +1,4 @@
-package soulseek.ui.activities
+package fr.sercurio.soulseek.ui.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
