@@ -4,6 +4,6 @@
 # Ignore Gradle build output directory
 build
 
+# Ignore local configuration
 .idea
-
 local.properties
