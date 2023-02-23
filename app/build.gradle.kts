@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application") version "7.2.2" apply true
-    id("com.android.library") version "7.4.0-beta02" apply false
+    id("com.android.library") version "7.4.1" apply false
     id("org.jetbrains.kotlin.android") version "1.8.20-Beta" apply true
 }
 
@@ -18,8 +18,8 @@ android {
         viewBinding = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19
-        targetCompatibility = JavaVersion.VERSION_19
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
