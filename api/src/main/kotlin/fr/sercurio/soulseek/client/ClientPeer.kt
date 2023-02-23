@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.zip.Inflater
+import kotlin.coroutines.coroutineContext
 
 
 class ClientPeer(
@@ -32,14 +33,16 @@ class ClientPeer(
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            launch {
-                connect()
-            }.join()
-            onSocketConnected()
+            supervisorScope {
+                launch() {
+                    connect()
+                }.join()
+                onSocketConnected()
 
-            launch {
-                while (true) {
-                    receive()
+                launch() {
+                    while (true) {
+                        receive()
+                    }
                 }
             }
         }

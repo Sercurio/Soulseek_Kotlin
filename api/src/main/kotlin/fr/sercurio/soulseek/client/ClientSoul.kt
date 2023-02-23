@@ -36,7 +36,7 @@ class ClientSoul
             }.join()
             onSocketConnected()
 
-            withContext(Dispatchers.IO) {
+            launch {
                 while (true) {
                     receive()
                 }
