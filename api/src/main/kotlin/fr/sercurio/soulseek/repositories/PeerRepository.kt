@@ -1,10 +1,9 @@
 package fr.sercurio.soulseek.repositories
 
 import fr.sercurio.soulseek.SoulseekApiListener
-import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.client.ClientPeer
-import fr.sercurio.soulseek.client.ClientSoul
 import fr.sercurio.soulseek.client.TransferSocket
+import fr.sercurio.soulseek.entities.PeerApiModel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -25,8 +24,8 @@ object PeerRepository {
         }
     }
 
-    suspend fun initiateTransferSocket(peer: PeerApiModel) {
-        peer.transferSocket = TransferSocket(peer)
+    suspend fun initiateTransferSocket(listener: SoulseekApiListener, peer: PeerApiModel) {
+        peer.transferSocket = TransferSocket(listener, peer)
         peersMutex.withLock {
             peers[peer.username] = peer
         }

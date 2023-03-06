@@ -44,7 +44,7 @@ class ExpandableSoulResultsAdapter(
         val peerNameView = view!!.findViewById<TextView>(R.id.username)
         val folderPathView = view.findViewById<TextView>(R.id.folderPath)
         peerNameView.text = peerTitle.username
-        folderPathView.text = peerTitle.soulFiles[0]?.folder ?: "unknown"
+        folderPathView.text = peerTitle.soulFiles[0].folder
         return view
     }
 
@@ -100,12 +100,12 @@ class ExpandableSoulResultsAdapter(
         return view!!
     }
 
-    private fun toKiloBytes(size: Long): CharSequence? {
+    private fun toKiloBytes(size: Long): CharSequence {
         val formatTemplate = "%d Ko"
         return formatTemplate.format(size / (1024))
     }
 
-    private fun toMinutes(duration: Int): CharSequence? {
+    private fun toMinutes(duration: Int): CharSequence {
         val formatTemplate = "%.0fm%.0f"
         val minutes = duration.toFloat() / 60f
         val seconds = (minutes % 1) * 60

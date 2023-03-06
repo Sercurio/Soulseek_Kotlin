@@ -14,9 +14,9 @@ class SoulInputStream(val byteReadChannel: ByteReadChannel) {
         this.packLeft = this.readInt()
     }
 
-    fun readInt(dis: DataInputStream): Int {
-        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(dis.readInt())
-            .order(ByteOrder.BIG_ENDIAN).getInt(0)
+    private fun readInt(dis: DataInputStream): Int {
+        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(dis.readInt()).order(ByteOrder.BIG_ENDIAN)
+            .getInt(0)
     }
 
     suspend fun readInt(): Int {
@@ -41,8 +41,8 @@ class SoulInputStream(val byteReadChannel: ByteReadChannel) {
 
 
     fun readLong(dis: DataInputStream): Long {
-        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(dis.readLong())
-            .order(ByteOrder.BIG_ENDIAN).getLong(0)
+        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(dis.readLong()).order(ByteOrder.BIG_ENDIAN)
+            .getLong(0)
     }
 
     fun readByte(dis: DataInputStream): Byte {
@@ -68,8 +68,7 @@ class SoulInputStream(val byteReadChannel: ByteReadChannel) {
     suspend fun readLong(): Long {
         val g = byteReadChannel.readLong()
         packLeft -= 8
-        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(g).order(ByteOrder.BIG_ENDIAN)
-            .getLong(0)
+        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(g).order(ByteOrder.BIG_ENDIAN).getLong(0)
     }
 
     fun readBoolean(dis: DataInputStream): Boolean {

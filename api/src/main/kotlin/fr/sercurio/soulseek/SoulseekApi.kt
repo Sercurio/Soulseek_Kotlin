@@ -3,8 +3,8 @@ package fr.sercurio.soulseek
 import fr.sercurio.soulseek.client.ClientSoul
 import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.RoomApiModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import fr.sercurio.soulseek.repositories.PeerRepository
+import kotlinx.coroutines.*
 import kotlin.random.Random
 
 
@@ -53,7 +53,22 @@ interface SoulseekApiListener {
     }
 
     fun onUserLeftRoom(roomName: String, username: String) {}
-    fun onConnectToPeer() {}
+    fun onConnectToPeer(username: String, type: String, ip: String, port: Int, token: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            if (type == "P") PeerRepository.initiateClientSocket(
+                this@SoulseekApiListener,
+                PeerApiModel(
+                    username, type, ip, port, token
+                )
+            ) else if (type == "F") PeerRepository.initiateTransferSocket(
+                this@SoulseekApiListener,
+                PeerApiModel(
+                    username, type, ip, port, token
+                )
+            )
+        }
+    }
+
     fun onPrivateMessages() {}
     fun onFileSearch() {}
     fun onPing() {}

@@ -13,8 +13,7 @@ class ByteMessage {
     fun writeInt8(value: Int): ByteMessage {
         val b = ByteArray(1)
         b[0] = (value and 0xFF).toByte()
-        bb = ByteBuffer.wrap(b)
-            .order(ByteOrder.LITTLE_ENDIAN)
+        bb = ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN)
 
 
         data += bb.array()
@@ -57,9 +56,7 @@ class ByteMessage {
     fun writeStr(str: String): ByteMessage {
         val strBytes = str.toByteArray(StandardCharsets.ISO_8859_1)
 
-        bb = ByteBuffer
-            .allocate(intSize + strBytes.size)
-            .order(ByteOrder.LITTLE_ENDIAN)
+        bb = ByteBuffer.allocate(intSize + strBytes.size).order(ByteOrder.LITTLE_ENDIAN)
         bb.putInt(strBytes.size)
         bb.put(strBytes)
 
@@ -94,8 +91,7 @@ class ByteMessage {
     */
 
     fun getBuff(): ByteArray {
-        bb = ByteBuffer.allocate(intSize + data.size)
-            .order(ByteOrder.LITTLE_ENDIAN)
+        bb = ByteBuffer.allocate(intSize + data.size).order(ByteOrder.LITTLE_ENDIAN)
 
         bb.putInt(data.size)
         bb.put(data)
@@ -104,9 +100,7 @@ class ByteMessage {
     }
 
     fun writeRawBytes(bytes: ByteArray): ByteMessage {
-        bb = ByteBuffer
-            .wrap(bytes)
-            .order(ByteOrder.LITTLE_ENDIAN)
+        bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
 
         data += bb.array()
         pointer += bytes.size

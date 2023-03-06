@@ -20,7 +20,7 @@ class ApiTests {
 
     @BeforeAll
     fun initializeApi() {
-    //    soulSeekApi = object : SoulseekApi("DebugApp", "159753"){}
+        soulSeekApi = object : SoulseekApi("DebugApp", "159753") {}
     }
 
     @Test
@@ -69,14 +69,16 @@ class ApiTests {
     @Test
     fun shouldFindFilesOnThisUser() {
         runBlocking {
-            soulSeekApi.clientSoul.userSearch(
-                "asiku", Random.nextInt(Integer.MAX_VALUE), "Flute Fruit"
-            )
             delay(2000)
+            soulSeekApi.clientSoul.userSearch(
+                "CamilleP34", Random.nextInt(Integer.MAX_VALUE), "BEACH CROTTE"
+            )
+            delay(5000)
             println(PeerRepository.peers)
-            val user = PeerRepository.peers["asiku"]
+            val user = PeerRepository.peers["CamilleP34"]
             println(user?.soulFiles)
-            user?.clientPeer?.queueUpload(user.soulFiles!![0])
+            user?.clientPeer?.queueUpload(user.soulFiles[0])
+            while (true);
         }
     }
 }

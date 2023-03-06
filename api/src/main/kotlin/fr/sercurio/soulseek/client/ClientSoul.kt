@@ -22,7 +22,7 @@ class ClientSoul
     private val port: Int,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
-    private val tag = SoulSocket::class.java.name
+    private val tag = this::class.java.name
 
     private val selectorManager = ActorSelectorManager(dispatcher)
     private var socket: Socket? = null
@@ -277,18 +277,7 @@ class ClientSoul
         val token = readChannel.readInt()
         readChannel.readBoolean()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            if (type == "P") PeerRepository.initiateClientSocket(
-                listener,
-                PeerApiModel(
-                    username, type, ip, port, token
-                )
-            ) else if (type == "F") PeerRepository.initiateTransferSocket(
-                PeerApiModel(
-                    username, type, ip, port, token
-                )
-            )
-        }
+        listener.onConnectToPeer(username, type, ip, port, token)
     }
 
     private fun receivePrivateMessages() {/*val ID = soulInput.readInt()

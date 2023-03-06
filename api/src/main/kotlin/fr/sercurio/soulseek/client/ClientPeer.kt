@@ -21,7 +21,7 @@ class ClientPeer(
     private val peer: PeerApiModel,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
-    private val tag = SoulSocket::class.java.name
+    private val tag = this::class.java.name
 
     private val selectorManager = ActorSelectorManager(dispatcher)
     private var socket: Socket? = null
