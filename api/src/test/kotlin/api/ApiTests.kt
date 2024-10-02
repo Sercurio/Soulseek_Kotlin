@@ -45,7 +45,7 @@ class ApiTests {
             delay(5000)
             for (peer in PeerRepository.peers) {
                 if (peer.value.soulFiles.isNotEmpty() && peer.value.slotsFree) {
-                    peer.value.clientPeer?.queueUpload(peer.value.soulFiles[0])
+                    peer.value.clientPeer?.queueUpload(peer.value.soulFiles[0].filename)
                     break
                 }
             }
@@ -77,7 +77,7 @@ class ApiTests {
             println(PeerRepository.peers)
             val user = PeerRepository.peers["CamilleP34"]
             println(user?.soulFiles)
-            user?.clientPeer?.queueUpload(user.soulFiles[0])
+            user?.clientPeer?.queueUpload(user.soulFiles[0].filename)
             while (true);
         }
     }

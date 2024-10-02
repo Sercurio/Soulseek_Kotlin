@@ -9,7 +9,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import fr.sercurio.soulseek.SoulActivity
-import fr.sercurio.soulseek.BuildConfig
+//import fr.sercurio.soulseek.BuildConfig
 import fr.sercurio.soulseek.databinding.ActivitySettingsBinding
 import fr.sercurio.soulseek.utils.AndroidUiHelper
 import java.io.File
@@ -42,7 +42,7 @@ class SettingsActivity : AppCompatActivity() {
         val sharedPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = sharedPreference.edit()
 
-        checkFirstRun(this, sharedPreference)
+//        checkFirstRun(this, sharedPreference)
 
         val appSpecificExternalDir = File(getExternalFilesDir(null), downloadDefaultDirName)
         appSpecificExternalDir.mkdir()
@@ -89,39 +89,39 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkFirstRun(settingsActivity: SettingsActivity, sharedPreference: SharedPreferences) {
-        val startSoul = Intent(this, SoulActivity::class.java)
-        val prefVersionCodeKey = "0.1"
-        val doestExist = -1
-
-        // Get current version code
-        val currentVersionCode = BuildConfig.VERSION_CODE
-
-        // Get saved version code
-        val savedVersionCode = sharedPreference.getInt(prefVersionCodeKey, -1)
-        Log.i("Version saved & current", "$currentVersionCode $savedVersionCode")
-
-        // Check for first run or upgrade
-        when {
-            (currentVersionCode == savedVersionCode || currentVersionCode > savedVersionCode) && preferencesAreSaved(
-                sharedPreference
-            ) -> {
-                startActivity(startSoul)
-                settingsActivity.finish()
-            }
-
-            savedVersionCode == doestExist -> {
-            }/*currentVersionCode > savedVersionCode -> {
-            }
-            */// TODO This is an upgrade
-
-            // Update the shared preferences with the current version code
-        }
-        // TODO This is an upgrade
-
-        // Update the shared preferences with the current version code
-        sharedPreference.edit().putInt(prefVersionCodeKey, currentVersionCode).apply()
-    }
+//    private fun checkFirstRun(settingsActivity: SettingsActivity, sharedPreference: SharedPreferences) {
+//        val startSoul = Intent(this, SoulActivity::class.java)
+//        val prefVersionCodeKey = "0.1"
+//        val doestExist = -1
+//
+//        // Get current version code
+//        val currentVersionCode = BuildConfig.VERSION_CODE
+//
+//        // Get saved version code
+//        val savedVersionCode = sharedPreference.getInt(prefVersionCodeKey, -1)
+//        Log.i("Version saved & current", "$currentVersionCode $savedVersionCode")
+//
+//        // Check for first run or upgrade
+//        when {
+//            (currentVersionCode == savedVersionCode || currentVersionCode > savedVersionCode) && preferencesAreSaved(
+//                sharedPreference
+//            ) -> {
+//                startActivity(startSoul)
+//                settingsActivity.finish()
+//            }
+//
+//            savedVersionCode == doestExist -> {
+//            }/*currentVersionCode > savedVersionCode -> {
+//            }
+//            */// TODO This is an upgrade
+//
+//            // Update the shared preferences with the current version code
+//        }
+//        // TODO This is an upgrade
+//
+//        // Update the shared preferences with the current version code
+//        sharedPreference.edit().putInt(prefVersionCodeKey, currentVersionCode).apply()
+//    }
 
     private fun checkIfSettingsAreEmpty(): Int {
         var error = 0

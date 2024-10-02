@@ -61,11 +61,12 @@ class ClientPeer(
 
         pierceFirewall(peer.token)
         //TODO changer ca pour recuperer l'username utilisé dans l'appli
-        peerInit("DebugApp", "P", peer.token)
+        //peerInit("DebugApp", "P", peer.token)
         //getShareFileList()
         //userInfoRequest()
-        val actualSearch = SoulStack.searches[SoulStack.actualSearchToken] ?: ""
-        fileSearchRequest(peer.token, actualSearch)
+       // val actualSearch = SoulStack.searches[SoulStack.actualSearchToken] ?: ""
+        //        fileSearchRequest(peer.token, actualSearch)
+        //        queueUpload(actualSearch)
     }
 
 
@@ -385,7 +386,7 @@ class ClientPeer(
 //                    askedFiles[ticket]?.path = path
 //                    askedFiles[ticket]?.size = size
                     println("Sending a confirmation to start the transfer.")
-                    downloadReply(ticket, true, null)
+                    downloadReply(ticket, true, askedFiles.size)
                 }/* TODO Trusted USers
                 GoSeekData.isUserTrusted(this.peerName) -> {
                     println( "A Trusted user is uploading a file to us.")
@@ -557,7 +558,9 @@ class ClientPeer(
         println("sending transfer request for ${soulFile.filename}, direction $direction, token $token")
         val actualToken = SoulStack.actualSearchToken
         askedFiles[soulFile.path] = soulFile
+        queueUpload(soulFile.path)
 
+/*
         val msgInit = ByteMessage().writeInt32(1).writeStr(this.peer.username).writeStr("P").writeInt32(token)
 
         val msgTransfer =
@@ -567,7 +570,7 @@ class ClientPeer(
             println("size shouldn't be null when responding transferRequest")
             return
         }
-        send(msgTransfer.getBuff())
+        send(msgTransfer.getBuff())*/
     }
 
     suspend fun downloadReply(ticket: Int, allowed: Boolean, reason: String?) {
@@ -578,10 +581,22 @@ class ClientPeer(
         send(msg.getBuff())
     }
 
+    suspend fun downloadReply(ticket: Int, allowed: Boolean, filesize: Int?) {
+        val msg = ByteMessage().writeInt32(41).writeInt32(ticket).writeBool(allowed.toInt())
 
-    suspend fun queueUpload(soulFile: SoulFile) {
+        if (allowed){
+          msg.writeInt32(filesize!!)
+        } else {
+            msg.writeStr("no reason")
+        }
+
+        send(msg.getBuff())
+    }
+
+
+    suspend fun queueUpload(filename: String) {
         send(
-            ByteMessage().writeInt32(43).writeStr(soulFile.path).getBuff()
+            ByteMessage().writeInt32(43).writeStr(filename).getBuff()
         )
     }
 
