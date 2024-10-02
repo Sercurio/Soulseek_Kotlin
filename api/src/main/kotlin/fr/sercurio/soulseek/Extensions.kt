@@ -1,6 +1,5 @@
 package fr.sercurio.soulseek
 
-import io.ktor.utils.io.*
 import java.security.MessageDigest
 
 fun Boolean.toInt() = if (this) 1 else 0

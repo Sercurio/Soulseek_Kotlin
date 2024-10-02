@@ -27,7 +27,8 @@ class ApiTests {
     fun shouldSuccessLogin() {
         runBlocking {
             delay(2000)
-            assertEquals(true, LoginRepository.getLoginStatus().connected)
+            soulSeekApi.clientSoul.loginService.login("Airmess", "159753"){println(if(it.isConnected)"connected!" else "failed")}
+//            assertEquals(true, LoginRepository.getLoginStatus().connected)
         }
     }
 

@@ -37,7 +37,7 @@ dependencies {
   implementation("com.google.dagger:hilt-android:2.28-alpha")
 
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
   implementation("ch.acra:acra-mail:5.9.7")
   implementation("ch.acra:acra-toast:5.9.7")
@@ -48,5 +48,5 @@ dependencies {
   implementation("androidx.test.ext:junit:1.2.1")
 
   testImplementation("junit:junit:4.13.2")
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 }
