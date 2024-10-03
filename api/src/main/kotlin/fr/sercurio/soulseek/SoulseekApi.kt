@@ -1,29 +1,76 @@
 package fr.sercurio.soulseek
 
-import fr.sercurio.soulseek.client.ClientSoul
+import fr.sercurio.soulseek.client.peer.PeerSocket
+import fr.sercurio.soulseek.client.peer.TransferSocket
+import fr.sercurio.soulseek.client.server.ServerSocket
+import fr.sercurio.soulseek.client.server.messages.LoginMessage
+import fr.sercurio.soulseek.client.server.messages.RoomListMessage
 import fr.sercurio.soulseek.entities.PeerApiModel
 import fr.sercurio.soulseek.entities.RoomApiModel
-import fr.sercurio.soulseek.repositories.PeerRepository
-import kotlin.random.Random
 import kotlinx.coroutines.*
 
-abstract class SoulseekApi(
+class SoulseekApi(
     login: String,
     password: String,
     listenPort: Int = 2000,
     host: String = "server.slsknet.org",
-    port: Int = 2242
-) : SoulseekApiListener {
-  var clientSoul: ClientSoul = ClientSoul(this, login, password, listenPort, host, port)
+    port: Int = 2242,
+) {
+  private val serverSocket: ServerSocket = ServerSocket(login, password, listenPort, host, port)
+
+  init {
+    serverSocket.onReceiveConnectToPeer {
+      CoroutineScope(Dispatchers.IO).launch {
+        if (it.type == "P") {
+          val peer = PeerSocket(it.ip, it.port, it.token, it.username)
+          peer.onReceiveSearchReply {
+            runBlocking {
+              println("asking for the file " + it.soulFiles[0].path)
+              peer.queueUpload(it.soulFiles[0].path)
+            }
+          }
+
+          peer.connect()
+        } else if (it.type == "F") {
+          TransferSocket(it.ip, it.port, it.token, it.username).connect()
+        }
+      }
+    }
+  }
+
+  fun login() {
+    serverSocket.connect()
+  }
+
+  fun onLogin(callback: (LoginMessage) -> Unit) {
+    serverSocket.onLogin { callback(it) }
+  }
+
+  fun onReceiveRoomList(callback: (RoomListMessage) -> Unit) {
+    serverSocket.onReceiveRoomList { callback(it) }
+  }
+
+  suspend fun fileSearch(query: String) {
+    serverSocket.fileSearch(query)
+  }
 }
 
 fun main() {
   runBlocking {
-    val soulseekApi = object : SoulseekApi("DebugApp", "159753") {}
+    val api = SoulseekApi("Airmess", "159753")
 
-    delay(2000)
-    soulseekApi.clientSoul.userSearch(
-        "Airmess", Random.nextInt(Integer.MAX_VALUE), "Stupeflip vite")
+    api.onLogin { if (it.connected) println("Logged sucessfully !") else println("not logged") }
+    api.onReceiveRoomList { println(it.rooms) }
+
+    api.login()
+
+    api.fileSearch("La danse des canards")
+
+    while (true) {}
+
+    //    delay(2000)
+    //    soulseekApi.clientSoul.userSearch(
+    //        "Airmess", Random.nextInt(Integer.MAX_VALUE), "Stupeflip vite")
   }
 }
 
@@ -57,16 +104,16 @@ interface SoulseekApiListener {
 
   fun onUserLeftRoom(roomName: String, username: String) {}
 
-  fun onConnectToPeer(username: String, type: String, ip: String, port: Int, token: Int) {
-    CoroutineScope(Dispatchers.IO).launch {
-      if (type == "P")
-          PeerRepository.initiateClientSocket(
-              this@SoulseekApiListener, PeerApiModel(username, type, ip, port, token))
-      else if (type == "F")
-          PeerRepository.initiateTransferSocket(
-              this@SoulseekApiListener, PeerApiModel(username, type, ip, port, token))
-    }
-  }
+  //  fun onConnectToPeer(username: String, type: String, ip: String, port: Int, token: Int) {
+  //    CoroutineScope(Dispatchers.IO).launch {
+  //      if (type == "P")
+  //          PeerRepository.initiateClientSocket(
+  //              this@SoulseekApiListener, PeerApiModel(username, type, ip, port, token))
+  //      else if (type == "F")
+  //          PeerRepository.initiateTransferSocket(
+  //              this@SoulseekApiListener, PeerApiModel(username, type, ip, port, token))
+  //    }
+  //  }
 
   fun onPrivateMessages() {}
 

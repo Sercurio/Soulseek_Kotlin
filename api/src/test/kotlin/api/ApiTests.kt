@@ -1,12 +1,10 @@
 package api
 
 import fr.sercurio.soulseek.SoulseekApi
-import fr.sercurio.soulseek.repositories.LoginRepository
 import fr.sercurio.soulseek.repositories.PeerRepository
 import fr.sercurio.soulseek.repositories.RoomRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -46,7 +44,7 @@ class ApiTests {
             delay(5000)
             for (peer in PeerRepository.peers) {
                 if (peer.value.soulFiles.isNotEmpty() && peer.value.slotsFree) {
-                    peer.value.clientPeer?.queueUpload(peer.value.soulFiles[0].filename)
+                    peer.value.peerSocket?.queueUpload(peer.value.soulFiles[0].filename)
                     break
                 }
             }
@@ -78,7 +76,7 @@ class ApiTests {
             println(PeerRepository.peers)
             val user = PeerRepository.peers["CamilleP34"]
             println(user?.soulFiles)
-            user?.clientPeer?.queueUpload(user.soulFiles[0].filename)
+            user?.peerSocket?.queueUpload(user.soulFiles[0].filename)
             while (true);
         }
     }

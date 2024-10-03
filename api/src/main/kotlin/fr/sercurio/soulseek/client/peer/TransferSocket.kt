@@ -1,47 +1,46 @@
-package fr.sercurio.soulseek.client
+package fr.sercurio.soulseek.client.peer
 
-import fr.sercurio.soulseek.SoulseekApiListener
+import fr.sercurio.soulseek.SoulInputStream
 import fr.sercurio.soulseek.entities.ByteMessage
-import fr.sercurio.soulseek.entities.PeerApiModel
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
-import kotlinx.coroutines.*
 import java.io.File
 import java.nio.ByteBuffer
+import kotlinx.coroutines.*
 
 class TransferSocket(
-    private val listener: SoulseekApiListener,
-    private val peer: PeerApiModel,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val host: String,
+    private val port: Int,
+    private val token: Int,
+    private val username: String,
 ) {
   private val tag = this::class.java.name
 
-  private val selectorManager = ActorSelectorManager(dispatcher)
-  private var socket: io.ktor.network.sockets.Socket? = null
+  private val selectorManager = ActorSelectorManager(Dispatchers.IO)
+  private var socket: Socket? = null
   private var writeChannel: ByteWriteChannel? = null
   private lateinit var readChannel: SoulInputStream
+  private val handler = CoroutineExceptionHandler { _, exception ->
+    println("CoroutineExceptionHandler got $exception")
+  }
 
-  init {
-    val handler = CoroutineExceptionHandler { _, exception ->
-      println("CoroutineExceptionHandler got $exception")
-    }
+  fun connect() {
     CoroutineScope(Dispatchers.IO).launch(handler) {
-      launch { connect() }.join()
+      launch {
+            val socket = aSocket(selectorManager).tcp().connect(InetSocketAddress(host, port))
+            this@TransferSocket.socket = socket
+            this@TransferSocket.writeChannel = socket.openWriteChannel(autoFlush = true)
+            this@TransferSocket.readChannel = SoulInputStream(socket.openReadChannel())
+          }
+          .join()
       onSocketConnected()
     }
   }
 
-  private suspend fun connect() {
-    val socket = aSocket(selectorManager).tcp().connect(InetSocketAddress(peer.host, peer.port))
-    this@TransferSocket.socket = socket
-    this@TransferSocket.writeChannel = socket.openWriteChannel(autoFlush = true)
-    this@TransferSocket.readChannel = SoulInputStream(socket.openReadChannel())
-  }
-
   private suspend fun send(message: ByteArray) {
-    withContext(dispatcher) {
+    withContext(Dispatchers.IO) {
       val writeChannel =
           this@TransferSocket.writeChannel ?: throw IllegalStateException("Socket not connected")
       val buffer = ByteBuffer.wrap(message)
@@ -51,9 +50,9 @@ class TransferSocket(
 
   private suspend fun onSocketConnected() {
     try {
-      println("downloading socket ready")
-      println(peer.toString())
-      //pierceFirewall(peer.token)
+      println("downloading socket ready with $username")
+
+      // pierceFirewall(peer.token)
       val fileSize = 6774597
       val file = File("output.mp3")
       if (file.exists()) file.delete()
@@ -69,9 +68,9 @@ class TransferSocket(
       // TODO this is here that we resume or not the download
       send(ByteMessage().writeInt32(0).getBuff())
       while (true) {
-        //readChannel.readAndSetMessageLength()
-        //println(readChannel.packLeft)
-        //val code = readChannel.readInt()
+        // readChannel.readAndSetMessageLength()
+        // println(readChannel.packLeft)
+        // val code = readChannel.readInt()
         // println(code)
         withContext(Dispatchers.IO) {
           readChannel.byteReadChannel.toInputStream().read(buffer, 0, 1024)

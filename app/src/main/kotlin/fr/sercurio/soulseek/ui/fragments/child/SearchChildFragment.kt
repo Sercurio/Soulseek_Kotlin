@@ -20,7 +20,6 @@ import fr.sercurio.soulseek.entities.SoulFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 
 class SearchChildFragment : Fragment() {
@@ -80,7 +79,7 @@ class SearchChildFragment : Fragment() {
             searchChildInterface.onSoulfileDownloadQuery(peer, soulFile)
             //peer.socketPeer?.peerInit(peer.username, "P", Bytes.randomBytes(4))
             CoroutineScope(Dispatchers.IO).launch {
-                peer.clientPeer?.transferRequest(0, peer.token, soulFile, null)
+                peer.peerSocket?.transferRequest(0, peer.token, soulFile, null)
             }
         }
 

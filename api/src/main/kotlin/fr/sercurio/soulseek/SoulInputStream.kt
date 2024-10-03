@@ -1,4 +1,4 @@
-package fr.sercurio.soulseek.client
+package fr.sercurio.soulseek
 
 import io.ktor.utils.io.*
 import java.io.DataInputStream
