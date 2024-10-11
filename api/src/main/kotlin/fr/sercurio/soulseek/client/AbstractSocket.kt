@@ -30,16 +30,12 @@ abstract class AbstractSocket(
     lateinit var socket: Socket
     private lateinit var writeChannel: ByteWriteChannel
     lateinit var readChannel: SoulInputStream
-    private val handler = CoroutineExceptionHandler { _, exception ->
-        println("CoroutineExceptionHandler got $exception")
-    }
-    private val job = Job()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO + job)
+
     private val writeMutex = Mutex()
 
     suspend fun connect() {
         withContext(Dispatchers.IO) {
-            coroutineScope.launch(handler) {
+            try {
                 socket = aSocket(selectorManager).tcp().connect(InetSocketAddress(host, port))
                 writeChannel = socket.openWriteChannel(autoFlush = true)
                 readChannel = SoulInputStream(socket.openReadChannel())
@@ -48,15 +44,13 @@ abstract class AbstractSocket(
 
                 onSocketConnected()
 
-                try {
-                    while (isActive) {
-                        whileConnected()
-                    }
-                } catch (e: Exception) {
-                    println(e)
-                } finally {
-                    onSocketDisconnected()
+                while (isActive) {
+                    whileConnected()
                 }
+            } catch (e: Exception) {
+                println("$e")
+            } finally {
+//                    socket.close()
             }
         }
     }
@@ -74,8 +68,4 @@ abstract class AbstractSocket(
 
     abstract suspend fun onSocketConnected()
     abstract suspend fun whileConnected()
-    fun onSocketDisconnected() {
-        writeChannel.close()
-        socket.close()
-    }
 }

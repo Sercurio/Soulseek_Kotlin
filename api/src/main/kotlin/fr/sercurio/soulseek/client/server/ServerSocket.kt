@@ -301,7 +301,6 @@ class ServerSocket(
     private fun receiveKickedFromServer() {
         // listener.onKickedFromServer()
         // Util.toast(this, "You were kicked from the server.")
-        onSocketDisconnected()
     }
 
     private suspend fun receiveGetRecommendations() {

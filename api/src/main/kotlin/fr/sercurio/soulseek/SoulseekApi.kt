@@ -5,6 +5,8 @@ import fr.sercurio.soulseek.client.peer.TransferSocket
 import fr.sercurio.soulseek.client.peer.messages.DownloadCompleteMessage
 import fr.sercurio.soulseek.client.peer.messages.SearchReplyMessage
 import fr.sercurio.soulseek.client.server.ServerSocket
+import fr.sercurio.soulseek.client.server.messages.ConnectToPeerMessageType
+import fr.sercurio.soulseek.client.server.messages.ConnectToPeerMessageType.*
 import fr.sercurio.soulseek.client.server.messages.LoginMessage
 import fr.sercurio.soulseek.client.server.messages.RoomListMessage
 import fr.sercurio.soulseek.client.server.messages.SayInRoomMessage
@@ -38,64 +40,61 @@ class SoulseekApi(
     private val askedFiles: MutableMap<String, SoulFile> = mutableMapOf()
     private val transferringFiles: MutableList<TransferringFile> = mutableListOf()
 
-    private val job = Job()
-    private val peersSocketCoroutineScope = CoroutineScope(Dispatchers.IO + job)
-
     init {
         CoroutineScope(Dispatchers.IO).launch {
             serverSocket.connect()
         }
 
         serverSocket.onReceiveConnectToPeer { connectToPeerMessage ->
-            peersSocketCoroutineScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 when (connectToPeerMessage.type) {
-                    "P" -> {
-                        launch {
-                            val peer = PeerSocket(
-                                connectToPeerMessage.ip,
-                                connectToPeerMessage.port,
-                                connectToPeerMessage.token,
-                                connectToPeerMessage.username
-                            )
-                            peer.onReceiveSearchReply { onSearchReplyCallback?.invoke(it) }
-                            peer.onTransferRequest { transferRequestMessage ->
-                                if (askedFiles[transferRequestMessage.path] != null) {
-                                    println("The file is recognized as a download we requested.")
-                                    println("Sending a confirmation to start the transfer.")
-                                    transferringFiles.add(
-                                        TransferringFile(
-                                            peer.username,
-                                            transferRequestMessage.token,
-                                            transferRequestMessage.path,
-                                            transferRequestMessage.size
-                                        )
+                    PEER.type -> {
+                        val peer = PeerSocket(
+                            connectToPeerMessage.ip,
+                            connectToPeerMessage.port,
+                            connectToPeerMessage.token,
+                            connectToPeerMessage.username
+                        )
+                        peer.onReceiveSearchReply { onSearchReplyCallback?.invoke(it) }
+                        peer.onTransferRequest { transferRequestMessage ->
+                            if (askedFiles[transferRequestMessage.path] != null) {
+                                println("The file is recognized as a download we requested.")
+                                println("Sending a confirmation to start the transfer.")
+                                transferringFiles.add(
+                                    TransferringFile(
+                                        peer.username,
+                                        transferRequestMessage.token,
+                                        transferRequestMessage.path,
+                                        transferRequestMessage.size
                                     )
+                                )
 
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        peer.downloadReply(
-                                            transferRequestMessage.token,
-                                            true,
-                                            transferRequestMessage.size,
-                                            null
-                                        )
-                                    }
-                                } //TODO Si c'est un Trusted User accepter directement la requete
-                                else {
-                                    launch {
-                                        peer.downloadReply(
-                                            transferRequestMessage.token, false, null, "Forbidden."
-                                        )
-                                    }
-                                    println("Unsolicited upload attempted at us.")
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    peer.downloadReply(
+                                        transferRequestMessage.token,
+                                        true,
+                                        transferRequestMessage.size,
+                                        null
+                                    )
                                 }
+                            } //TODO Si c'est un Trusted User accepter directement la requete
+                            else {
+                                launch {
+                                    peer.downloadReply(
+                                        transferRequestMessage.token, false, null, "Forbidden."
+                                    )
+                                }
+                                println("Unsolicited upload attempted at us.")
                             }
-                            peerSockets[peer.username] = peer
-
-                            peer.connect()
                         }
+                        peerSockets[peer.username] = peer
+
+                        peer.connect()
+
+                        peerSockets.remove(peer.username)
                     }
 
-                    "F" -> {
+                    TRANSFER.type -> {
                         transferringFiles.find { it.username == connectToPeerMessage.username }
                             ?.let {
                                 val transfer = TransferSocket(
@@ -111,7 +110,10 @@ class SoulseekApi(
                                     onDownloadComplete?.invoke(downloadCompleteMessage)
                                 }
                                 transferSockets[transfer.username] = transfer
+
                                 transfer.connect()
+
+                                transferSockets.remove(transfer.username)
                             }
                     }
 
@@ -185,7 +187,7 @@ fun main() {
         }
         api.login("login", "password")
 
-        api.fileSearch("a fantastic group")
+        api.fileSearch("Shpongle")
 
         while (true) {
             delay(1000)

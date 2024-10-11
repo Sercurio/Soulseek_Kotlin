@@ -12,7 +12,7 @@ class SoulInputStream(val byteReadChannel: ByteReadChannel) {
     var packLeft: Int = 0
 
     suspend fun readAndSetMessageLength() {
-        this.packLeft = this.readInt()
+        packLeft = readInt()
     }
 
     private fun readInt(dis: DataInputStream): Int {
@@ -22,8 +22,8 @@ class SoulInputStream(val byteReadChannel: ByteReadChannel) {
     }
 
     suspend fun readInt(): Int {
-        val g: Int = this.byteReadChannel.readIntLittleEndian()
-        this.packLeft -= 4
+        val g: Int = byteReadChannel.readIntLittleEndian()
+        packLeft -= 4
         return g
     }
 
@@ -98,6 +98,6 @@ class SoulInputStream(val byteReadChannel: ByteReadChannel) {
     }
 
     suspend fun skipPackLeft() {
-        byteReadChannel.discardExact(this.packLeft.toLong())
+        byteReadChannel.discardExact(packLeft.toLong())
     }
 }

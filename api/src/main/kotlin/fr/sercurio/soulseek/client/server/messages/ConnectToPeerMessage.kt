@@ -8,3 +8,10 @@ class ConnectToPeerMessage(
     val token: Int,
     val obfuscatedPort: Boolean
 )
+
+enum class ConnectToPeerMessageType(
+    val type: String
+) {
+    PEER("P"),
+    TRANSFER("F")
+}
