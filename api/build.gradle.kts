@@ -8,7 +8,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     implementation("io.ktor:ktor-network:2.2.3")
