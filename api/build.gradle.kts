@@ -13,7 +13,7 @@ dependencies {
 
     implementation("io.ktor:ktor-network:2.2.3")
 
-    implementation("org.slf4j:slf4j-simple:2.0.3")
+    implementation("org.slf4j:slf4j-simple:2.0.16")
 
     implementation("org.apache.commons:commons-configuration2:2.11.0")
 }
