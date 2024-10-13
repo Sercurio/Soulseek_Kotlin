@@ -1,4 +1,4 @@
-plugins { kotlin("jvm") version "1.9.22" }
+plugins { kotlin("jvm") version "1.9.25" }
 
 group = "fr.sercurio"
 

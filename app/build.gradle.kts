@@ -1,9 +1,9 @@
 plugins {
     id("com.android.application") version "7.2.2" apply true
     id("com.android.library") version "8.7.0" apply false
-    id("org.jetbrains.kotlin.android") version "2.0.20" apply true
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.20"
-    kotlin("plugin.serialization") version "2.0.20"
+    id("org.jetbrains.kotlin.android") version "2.0.21" apply true
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
+    kotlin("plugin.serialization") version "2.0.21"
     id("com.diffplug.spotless") version "6.19.0" apply false
 
 }
@@ -107,7 +107,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.0.10"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.0.21"))
 }
 
 subprojects {
