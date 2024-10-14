@@ -11,7 +11,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    implementation("io.ktor:ktor-network:2.2.3")
+    implementation("io.ktor:ktor-network:2.3.12")
 
     implementation("org.slf4j:slf4j-simple:2.0.3")
 
