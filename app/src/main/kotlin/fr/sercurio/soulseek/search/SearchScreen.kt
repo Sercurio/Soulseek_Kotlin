@@ -1,5 +1,7 @@
 package fr.sercurio.soulseek.search
 
+import android.os.Environment
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.sercurio.soulseek.SoulseekApi
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 
 @Composable
 fun SearchScreen(soulseekApi: SoulseekApi) {
@@ -41,16 +44,23 @@ fun SearchScreen(soulseekApi: SoulseekApi) {
     }
 
     soulseekApi.onDownloadComplete { message ->
-        val dir = File(
-            context.getExternalFilesDir(null),
-            "downloads/${message.username}",
-        )
+        val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
 
-        dir.mkdirs()
-        val file = File(dir, message.filepath)
+        val relativePath = message.filepath.substringBeforeLast("/")
+        val userDir = File(downloadsDir, message.username)
+        val destinationDir = File(userDir, relativePath)
 
-        FileOutputStream(file).use { output ->
-            output.write(message.file)
+        destinationDir.mkdirs()
+
+        val file = File(destinationDir, message.filepath.substringAfterLast("/"))
+
+        try {
+            FileOutputStream(file).use { output ->
+                output.write(message.file)
+            }
+            Log.d("Download", "Fichier téléchargé avec succès: ${file.absolutePath}")
+        } catch (e: IOException) {
+            Log.e("Download", "Erreur lors de la sauvegarde du fichier", e)
         }
     }
 

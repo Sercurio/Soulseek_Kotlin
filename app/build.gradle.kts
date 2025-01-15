@@ -1,10 +1,12 @@
 plugins {
+    val kotlinVersion = "2.1.0"
+
     id("com.android.application") version "7.2.2" apply true
-    id("com.android.library") version "8.7.0" apply false
-    id("org.jetbrains.kotlin.android") version "2.0.20" apply true
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.20"
-    kotlin("plugin.serialization") version "2.0.20"
-    id("com.diffplug.spotless") version "6.19.0" apply false
+    id("com.android.library") version "8.7.3" apply false
+    id("com.diffplug.spotless") version "7.0.1" apply false
+    kotlin("plugin.serialization") version kotlinVersion
+    id("org.jetbrains.kotlin.android") version kotlinVersion apply true
+    id("org.jetbrains.kotlin.plugin.compose") version kotlinVersion
 
 }
 
@@ -31,29 +33,29 @@ dependencies {
     // Android Jetpack
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
 
     implementation("com.google.dagger:hilt-android:2.52")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
 
     implementation("ch.acra:acra-mail:5.11.4")
     implementation("ch.acra:acra-toast:5.11.4")
 
     implementation(project(":api"))
     implementation("androidx.test.ext:junit:1.2.1")
-    implementation("androidx.compose.runtime:runtime-android:1.7.3")
-    implementation("androidx.compose.material3:material3-window-size-class-android:1.3.0")
+    implementation("androidx.compose.runtime:runtime-android:1.7.6")
+    implementation("androidx.compose.material3:material3-window-size-class-android:1.3.1")
     implementation("androidx.datastore:datastore-core-android:1.1.1")
-    implementation("androidx.compose.ui:ui-tooling-preview-android:1.7.3")
+    implementation("androidx.compose.ui:ui-tooling-preview-android:1.7.6")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
 
     val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
     implementation(composeBom)
@@ -66,9 +68,9 @@ dependencies {
     // such as input and measurement/layout
     implementation("androidx.compose.ui:ui")
     // Optional - Integration with activities
-    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation("androidx.activity:activity-compose:1.9.3")
     // Optional - Integration with ViewModels
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     // Optional - Integration with LiveData
     implementation("androidx.compose.runtime:runtime-livedata")
     // Optional - Integration with RxJava
@@ -84,7 +86,7 @@ dependencies {
     implementation("androidx.compose.material3.adaptive:adaptive")
 
 
-    val navVersion = "2.8.2"
+    val navVersion = "2.8.5"
 
     // Jetpack Compose integration
     implementation("androidx.navigation:navigation-compose:$navVersion")
@@ -98,16 +100,18 @@ dependencies {
 
     // Testing Navigation
     androidTestImplementation("androidx.navigation:navigation-testing:$navVersion")
+
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.1")
 
-    implementation("androidx.compose.material3:material3:1.3.0")
-    implementation("androidx.compose.material3:material3-window-size-class:1.3.0")
-    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha01")
+    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.4.0-alpha05")
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
 
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.0.10"))
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.1.0"))
 }
 
 subprojects {

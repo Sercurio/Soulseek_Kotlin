@@ -6,7 +6,7 @@ data class SearchReplyMessage(
     val username: String,
     val token: Int,
     val soulFiles: ArrayList<SoulFile>,
-    private val slotsFree: Boolean,
-    private val avgSpeed: Int,
-    private val queueLength: Long
+    val slotsFree: Boolean,
+    val avgSpeed: Int,
+    val queueLength: Long
 )

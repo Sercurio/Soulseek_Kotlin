@@ -185,7 +185,7 @@ fun main() {
                 //api.queueUpload(searchReplyMessage.username, searchReplyMessage.soulFiles[0])
             }
         }
-        api.login("login", "password")
+        api.login("DebugApp", "DebugApp")
 
         api.fileSearch("Shpongle")
 

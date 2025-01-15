@@ -1,1 +1,39 @@
-
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "packageRules": [
+    {
+      "description": "Update Kotlin and related dependencies",
+      "managers": ["gradle"],
+      "packageNames": ["org.jetbrains.kotlin", "org.jetbrains.kotlinx"],
+      "groupName": "Kotlin Dependencies",
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Update Ktor dependencies",
+      "packageNames": ["io.ktor"],
+      "groupName": "Ktor Dependencies",
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Update Testing libraries",
+      "packageNames": [
+        "org.junit.jupiter",
+        "org.junit.platform"
+      ],
+      "groupName": "Testing Libraries",
+      "schedule": ["at any time"]
+    },
+    {
+      "description": "Update Logging dependencies",
+      "packageNames": ["org.slf4j"],
+      "groupName": "Logging Dependencies",
+      "schedule": ["at any time"]
+    }
+  ],
+  "gradle": {
+    "fileMatch": ["**/build.gradle.kts"]
+  }
+}

@@ -55,7 +55,6 @@ fun SectionItem(
                 )
             }
         }
-        Text("test")
         HorizontalDivider(modifier = Modifier.padding(top = 10.dp), thickness = 1.dp)
     }
 }

@@ -138,7 +138,6 @@ fun LoginScreen(
                 if (it.connected) {
                     Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
                     onNavigateToMain() // Naviguer vers Home en cas de succès
-
                 } else {
                     Toast.makeText(context, "Login failed: ${it.reason}", Toast.LENGTH_SHORT)
                         .show()
