@@ -2,6 +2,7 @@ package fr.sercurio.soulseek
 
 import android.os.Bundle
 import android.os.Environment
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +16,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
 
         val api = SoulseekApi()
+
         api.setSaveDirectory(
             Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_MUSIC

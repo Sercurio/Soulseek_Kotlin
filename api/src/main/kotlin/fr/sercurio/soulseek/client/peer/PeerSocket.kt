@@ -33,29 +33,32 @@ class PeerSocket(
 
     override suspend fun whileConnected() {
         try {
-            readChannel.readAndSetMessageLength()
-            val code = readChannel.readInt()
-            println("PeerClient received: Message code: $code Packet Size: ${readChannel.packLeft + 4}")
+            if(readChannel.byteReadChannel.isClosedForRead.not()) {
 
-            when (code) {
-                4 -> receiveSharesRequest()
-                5 -> receiveSharesReply()
-                8 -> receiveSearchRequest()
-                9 -> fileSearchResponse()
-                15 -> receiveInfoRequest()
-                16 -> receiveInfoReply()
-                36 -> receiveFolderContentsRequest()
-                37 -> receiveFolderContentsReply()
-                40 -> receiveTransferRequest()
-                41 -> receiveTransferReply()
-                43 -> receiveQueueDownload()
-                44 -> receivePlaceInQueueReply()
-                46 -> receiveUploadFailed()
-                50 -> receiveQueueFailed()
-                51 -> receivePlaceInQueueRequest()
-                52 -> receiveUploadQueueNotification()
+                readChannel.readAndSetMessageLength()
+                val code = readChannel.readInt()
+                println("PeerClient received: Message code: $code Packet Size: ${readChannel.packLeft + 4}")
+
+                when (code) {
+                    4 -> receiveSharesRequest()
+                    5 -> receiveSharesReply()
+                    8 -> receiveSearchRequest()
+                    9 -> fileSearchResponse()
+                    15 -> receiveInfoRequest()
+                    16 -> receiveInfoReply()
+                    36 -> receiveFolderContentsRequest()
+                    37 -> receiveFolderContentsReply()
+                    40 -> receiveTransferRequest()
+                    41 -> receiveTransferReply()
+                    43 -> receiveQueueDownload()
+                    44 -> receivePlaceInQueueReply()
+                    46 -> receiveUploadFailed()
+                    50 -> receiveQueueFailed()
+                    51 -> receivePlaceInQueueRequest()
+                    52 -> receiveUploadQueueNotification()
+                }
+                readChannel.skipPackLeft()
             }
-            readChannel.skipPackLeft()
         } catch (e: Exception) {
             throw e
         }
