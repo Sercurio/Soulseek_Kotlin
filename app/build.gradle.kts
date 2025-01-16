@@ -1,13 +1,11 @@
 plugins {
-    val kotlinVersion = "2.1.0"
-
-    id("com.android.application") version "7.2.2" apply true
     id("com.android.library") version "8.7.3" apply false
-    id("com.diffplug.spotless") version "7.0.1" apply false
-    kotlin("plugin.serialization") version kotlinVersion
-    id("org.jetbrains.kotlin.android") version kotlinVersion apply true
-    id("org.jetbrains.kotlin.plugin.compose") version kotlinVersion
+    id("com.android.application") version "7.2.2" apply true
 
+    val kotlinVersion = "2.1.0"
+    kotlin("android") version kotlinVersion
+    kotlin("plugin.compose") version kotlinVersion
+    kotlin("plugin.serialization") version kotlinVersion
 }
 
 kotlin { jvmToolchain(17) }
@@ -112,14 +110,4 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
 
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:2.1.0"))
-}
-
-subprojects {
-    apply(plugin = "com.diffplug.spotless")
-
-    afterEvaluate {
-        tasks.named("preBuild") {
-            dependsOn("spotlessApply")
-        }
-    }
 }

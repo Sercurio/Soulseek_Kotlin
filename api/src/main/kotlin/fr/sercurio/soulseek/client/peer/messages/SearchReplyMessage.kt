@@ -8,5 +8,5 @@ data class SearchReplyMessage(
     val soulFiles: ArrayList<SoulFile>,
     val slotsFree: Boolean,
     val avgSpeed: Int,
-    val queueLength: Long
+    val queueLength: Long,
 )

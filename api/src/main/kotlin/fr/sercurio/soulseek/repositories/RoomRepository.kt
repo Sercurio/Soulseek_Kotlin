@@ -10,9 +10,7 @@ object RoomRepository {
     private var rooms: List<RoomApiModel> = emptyList()
 
     suspend fun setRooms(rooms: List<RoomApiModel>) {
-        roomsMutex.withLock {
-            RoomRepository.rooms = rooms
-        }
+        roomsMutex.withLock { RoomRepository.rooms = rooms }
     }
 
     fun getRooms(): List<RoomApiModel> {
@@ -21,7 +19,8 @@ object RoomRepository {
 
     suspend fun addRoomMessage(roomMessageApiModel: RoomMessageApiModel) {
         roomsMutex.withLock {
-            rooms.filter { it.name == roomMessageApiModel.room }
+            rooms
+                .filter { it.name == roomMessageApiModel.room }
                 .map { it.roomMessageApiModels.add(roomMessageApiModel) }
         }
     }

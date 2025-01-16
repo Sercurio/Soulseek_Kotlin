@@ -15,7 +15,6 @@ class ByteMessage {
         b[0] = (value and 0xFF).toByte()
         bb = ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN)
 
-
         data += bb.array()
         pointer += 1
         return this
@@ -33,9 +32,7 @@ class ByteMessage {
     }
     */
 
-    /**
-     * write 32bits integer concatenated with the current ByteKot
-     */
+    /** write 32bits integer concatenated with the current ByteKot */
     fun writeInt32(value: Int): ByteMessage {
         bb = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value)
         data += bb.array()
@@ -43,9 +40,7 @@ class ByteMessage {
         return this
     }
 
-    /**
-     * write 64bits long concatenated with the current ByteKot
-     */
+    /** write 64bits long concatenated with the current ByteKot */
     fun writeLong(value: Long): ByteMessage {
         bb = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(value)
         data += bb.array()
@@ -65,7 +60,6 @@ class ByteMessage {
 
         return this
     }
-
 
     fun writeBool(value: Int): ByteMessage {
         bb = ByteBuffer.allocate(1).order(ByteOrder.LITTLE_ENDIAN).put(value.toByte())

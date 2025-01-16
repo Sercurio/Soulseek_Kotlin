@@ -5,29 +5,30 @@ import fr.sercurio.soulseek.client.peer.TransferSocket
 import fr.sercurio.soulseek.client.peer.messages.DownloadCompleteMessage
 import fr.sercurio.soulseek.client.peer.messages.SearchReplyMessage
 import fr.sercurio.soulseek.client.server.ServerSocket
-import fr.sercurio.soulseek.client.server.messages.ConnectToPeerMessageType
 import fr.sercurio.soulseek.client.server.messages.ConnectToPeerMessageType.*
 import fr.sercurio.soulseek.client.server.messages.LoginMessage
 import fr.sercurio.soulseek.client.server.messages.RoomListMessage
 import fr.sercurio.soulseek.client.server.messages.SayInRoomMessage
 import fr.sercurio.soulseek.entities.SoulFile
+import kotlin.random.Random
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlin.random.Random
 
 data class TransferringFile(
-    val username: String, val token: Int, val filename: String, val size: Long
+    val username: String,
+    val token: Int,
+    val filename: String,
+    val size: Long,
 )
 
 class SoulseekApi(
     host: String = "server.slsknet.org",
     port: Int = 2242,
     private var onSearchReplyCallback: ((SearchReplyMessage) -> Unit)? = null,
-    private var onDownloadComplete: ((DownloadCompleteMessage) -> Unit)? = null
+    private var onDownloadComplete: ((DownloadCompleteMessage) -> Unit)? = null,
 ) {
     private var saveDirectory: String? = null
 
@@ -41,20 +42,19 @@ class SoulseekApi(
     private val transferringFiles: MutableList<TransferringFile> = mutableListOf()
 
     init {
-        CoroutineScope(Dispatchers.IO).launch {
-            serverSocket.connect()
-        }
+        CoroutineScope(Dispatchers.IO).launch { serverSocket.connect() }
 
         serverSocket.onReceiveConnectToPeer { connectToPeerMessage ->
             CoroutineScope(Dispatchers.IO).launch {
                 when (connectToPeerMessage.type) {
                     PEER.type -> {
-                        val peer = PeerSocket(
-                            connectToPeerMessage.ip,
-                            connectToPeerMessage.port,
-                            connectToPeerMessage.token,
-                            connectToPeerMessage.username
-                        )
+                        val peer =
+                            PeerSocket(
+                                connectToPeerMessage.ip,
+                                connectToPeerMessage.port,
+                                connectToPeerMessage.token,
+                                connectToPeerMessage.username,
+                            )
                         peer.onReceiveSearchReply { onSearchReplyCallback?.invoke(it) }
                         peer.onTransferRequest { transferRequestMessage ->
                             if (askedFiles[transferRequestMessage.path] != null) {
@@ -65,7 +65,7 @@ class SoulseekApi(
                                         peer.username,
                                         transferRequestMessage.token,
                                         transferRequestMessage.path,
-                                        transferRequestMessage.size
+                                        transferRequestMessage.size,
                                     )
                                 )
 
@@ -74,14 +74,17 @@ class SoulseekApi(
                                         transferRequestMessage.token,
                                         true,
                                         transferRequestMessage.size,
-                                        null
+                                        null,
                                     )
                                 }
-                            } //TODO Si c'est un Trusted User accepter directement la requete
+                            } // TODO Si c'est un Trusted User accepter directement la requete
                             else {
                                 launch {
                                     peer.downloadReply(
-                                        transferRequestMessage.token, false, null, "Forbidden."
+                                        transferRequestMessage.token,
+                                        false,
+                                        null,
+                                        "Forbidden.",
                                     )
                                 }
                                 println("Unsolicited upload attempted at us.")
@@ -95,17 +98,19 @@ class SoulseekApi(
                     }
 
                     TRANSFER.type -> {
-                        transferringFiles.find { it.username == connectToPeerMessage.username }
+                        transferringFiles
+                            .find { it.username == connectToPeerMessage.username }
                             ?.let {
-                                val transfer = TransferSocket(
-                                    saveDirectory,
-                                    connectToPeerMessage.ip,
-                                    connectToPeerMessage.port,
-                                    connectToPeerMessage.username,
-                                    connectToPeerMessage.token,
-                                    it.filename,
-                                    it.size
-                                )
+                                val transfer =
+                                    TransferSocket(
+                                        saveDirectory,
+                                        connectToPeerMessage.ip,
+                                        connectToPeerMessage.port,
+                                        connectToPeerMessage.username,
+                                        connectToPeerMessage.token,
+                                        it.filename,
+                                        it.size,
+                                    )
                                 transfer.onDownloadComplete { downloadCompleteMessage ->
                                     onDownloadComplete?.invoke(downloadCompleteMessage)
                                 }
@@ -118,7 +123,9 @@ class SoulseekApi(
                     }
 
                     else -> {
-                        println("$connectToPeerMessage. not found on user ${connectToPeerMessage.username}")
+                        println(
+                            "$connectToPeerMessage. not found on user ${connectToPeerMessage.username}"
+                        )
                     }
                 }
             }
@@ -178,11 +185,13 @@ fun main() {
         val api = SoulseekApi()
 
         api.onLogin { if (it.connected) println("Logged sucessfully !") else println("not logged") }
-        api.onReceiveRoomList { }
+        api.onReceiveRoomList {}
         api.onReceiveSearchReply { searchReplyMessage ->
             launch {
-                println("searchReply: ${searchReplyMessage.username}\n${searchReplyMessage.soulFiles.map { it.filename }}")
-                //api.queueUpload(searchReplyMessage.username, searchReplyMessage.soulFiles[0])
+                println(
+                    "searchReply: ${searchReplyMessage.username}\n${searchReplyMessage.soulFiles.map { it.filename }}"
+                )
+                // api.queueUpload(searchReplyMessage.username, searchReplyMessage.soulFiles[0])
             }
         }
         api.login("DebugApp", "DebugApp")

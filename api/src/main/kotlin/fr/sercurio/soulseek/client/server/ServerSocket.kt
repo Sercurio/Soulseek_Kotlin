@@ -15,15 +15,14 @@ import kotlin.random.Random
 class ServerSocket(
     host: String,
     port: Int,
-
     private val loginCallback: ResponseCallback<LoginMessage> = ResponseCallback(),
     private val roomListCallback: ResponseCallback<RoomListMessage> = ResponseCallback(),
     private val sayInRoomCallback: ResponseCallback<SayInRoomMessage> = ResponseCallback(),
-    private val connectToPeerCallback: ResponseCallback<ConnectToPeerMessage> = ResponseCallback()
+    private val connectToPeerCallback: ResponseCallback<ConnectToPeerMessage> = ResponseCallback(),
 ) : AbstractSocket(host, port) {
     override suspend fun onSocketConnected() {
-//        login(login, password)
-//        setListenPort(listenPort)
+        //        login(login, password)
+        //        setListenPort(listenPort)
     }
 
     override suspend fun whileConnected() {
@@ -31,7 +30,9 @@ class ServerSocket(
             readChannel.readAndSetMessageLength()
             val code = readChannel.readInt()
 
-            println("ServerClient received: Message code: $code Packet Size: ${readChannel.packLeft + 4}")
+            println(
+                "ServerClient received: Message code: $code Packet Size: ${readChannel.packLeft + 4}"
+            )
 
             when (code) {
                 1 -> receiveLogin()
@@ -243,14 +244,7 @@ class ServerSocket(
         val obfuscatedPort = readChannel.readBoolean()
 
         connectToPeerCallback.update(
-            ConnectToPeerMessage(
-                username,
-                type,
-                ip,
-                port,
-                token,
-                obfuscatedPort
-            )
+            ConnectToPeerMessage(username, type, ip, port, token, obfuscatedPort)
         )
     }
 
@@ -465,7 +459,8 @@ class ServerSocket(
     }
 
     private fun receiveRoomTickerAdd() {
-        // GoSeekData.newTicker(soulInput.readString(), soulInput.readString(), soulInput.readString())
+        // GoSeekData.newTicker(soulInput.readString(), soulInput.readString(),
+        // soulInput.readString())
     }
 
     private fun receiveRoomTickerRemove() {
@@ -634,13 +629,7 @@ class ServerSocket(
     }
 
     suspend fun sendRoomMessage(room: String, message: String) {
-        send(
-            ByteMessage()
-                .writeInt32(13)
-                .writeStr(room)
-                .writeStr(message)
-                .getBuff()
-        )
+        send(ByteMessage().writeInt32(13).writeStr(room).writeStr(message).getBuff())
     }
 
     fun onReceiveRoomList(callback: (RoomListMessage) -> Unit) {

@@ -16,7 +16,9 @@ class SoulInputStream(val byteReadChannel: ByteReadChannel) {
     }
 
     private fun readInt(dis: DataInputStream): Int {
-        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(dis.readInt())
+        return ByteBuffer.allocate(4)
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .putInt(dis.readInt())
             .order(ByteOrder.BIG_ENDIAN)
             .getInt(0)
     }
@@ -41,9 +43,10 @@ class SoulInputStream(val byteReadChannel: ByteReadChannel) {
         return String(tmp).replace("\\", "/")
     }
 
-
     fun readLong(dis: DataInputStream): Long {
-        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(dis.readLong())
+        return ByteBuffer.allocate(8)
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .putLong(dis.readLong())
             .order(ByteOrder.BIG_ENDIAN)
             .getLong(0)
     }
@@ -64,21 +67,28 @@ class SoulInputStream(val byteReadChannel: ByteReadChannel) {
         val c: Byte = readByte()
         val b: Byte = readByte()
         val a: Byte = readByte()
-        return (if (a >= 0.toByte()) a else a + 256).toString() + "." + (if (b >= 0.toByte()) b else b + 256) + "." + (if (c >= 0.toByte()) c else c + 256) + "." + if (d >= 0.toByte()) d else d + 256
+        return (if (a >= 0.toByte()) a else a + 256).toString() +
+            "." +
+            (if (b >= 0.toByte()) b else b + 256) +
+            "." +
+            (if (c >= 0.toByte()) c else c + 256) +
+            "." +
+            if (d >= 0.toByte()) d else d + 256
     }
-
 
     suspend fun readLong(): Long {
         val g = byteReadChannel.readLong()
         packLeft -= 8
-        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(g)
-            .order(ByteOrder.BIG_ENDIAN).getLong(0)
+        return ByteBuffer.allocate(8)
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .putLong(g)
+            .order(ByteOrder.BIG_ENDIAN)
+            .getLong(0)
     }
 
     fun readBoolean(dis: DataInputStream): Boolean {
         return dis.readBoolean()
     }
-
 
     suspend fun readByte(): Byte {
         val a = byteReadChannel.readByte()

@@ -13,12 +13,12 @@ object PeerRepository {
     }
 
     suspend fun initiateClientSocket(peer: String) {
-//    peer.clientPeer = PeerSocket(peer)
-//    peersMutex.withLock { peers[peer.username] = peer }
+        //    peer.clientPeer = PeerSocket(peer)
+        //    peersMutex.withLock { peers[peer.username] = peer }
     }
 
     suspend fun initiateTransferSocket(peer: PeerApiModel) {
-//    peer.transferSocket = TransferSocket(peer)
-//    peersMutex.withLock { peers[peer.username] = peer }
+        //    peer.transferSocket = TransferSocket(peer)
+        //    peersMutex.withLock { peers[peer.username] = peer }
     }
 }
