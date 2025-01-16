@@ -1,4 +1,4 @@
-package fr.sercurio.soulseek.exposition.login.model
+package fr.sercurio.soulseek.server.model
 
 data class LoginResponse(
     val connected: Boolean,

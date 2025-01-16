@@ -1,4 +1,4 @@
-package fr.sercurio.soulseek.utils
+package fr.sercurio.soulseek.server.utils
 
 object SoulStack {
     var searches = HashMap<Int, String>()

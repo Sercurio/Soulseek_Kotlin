@@ -1,15 +1,20 @@
 package fr.sercurio.soulseek.client.server
 
-import fr.sercurio.soulseek.ResponseCallback
-import fr.sercurio.soulseek.client.AbstractSocket
+import fr.sercurio.soulseek.client.shared.ResponseCallback
+import fr.sercurio.soulseek.client.shared.AbstractSocket
 import fr.sercurio.soulseek.client.server.messages.ConnectToPeerMessage
 import fr.sercurio.soulseek.client.server.messages.LoginMessage
 import fr.sercurio.soulseek.client.server.messages.RoomListMessage
 import fr.sercurio.soulseek.client.server.messages.SayInRoomMessage
-import fr.sercurio.soulseek.entities.ByteMessage
-import fr.sercurio.soulseek.entities.RoomApiModel
-import fr.sercurio.soulseek.toMD5
-import fr.sercurio.soulseek.utils.SoulStack
+import fr.sercurio.soulseek.client.shared.model.ByteMessage
+import fr.sercurio.soulseek.server.entities.RoomApiModel
+import fr.sercurio.soulseek.server.model.LoginResponse
+import fr.sercurio.soulseek.server.toMD5
+import fr.sercurio.soulseek.server.utils.SoulStack
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.withTimeout
+import java.util.concurrent.TimeoutException
 import kotlin.random.Random
 
 class ServerSocket(
@@ -20,6 +25,9 @@ class ServerSocket(
     private val sayInRoomCallback: ResponseCallback<SayInRoomMessage> = ResponseCallback(),
     private val connectToPeerCallback: ResponseCallback<ConnectToPeerMessage> = ResponseCallback(),
 ) : AbstractSocket(host, port) {
+    private val loginDeferred = CompletableDeferred<LoginResponse>()
+
+
     override suspend fun onSocketConnected() {
         //        login(login, password)
         //        setListenPort(listenPort)
@@ -102,6 +110,20 @@ class ServerSocket(
         } else {
             val reason: String = readChannel.readString()
             loginCallback.update(LoginMessage(false, null, null, reason))
+        }
+    }
+
+    private suspend fun receiveLoginTest() {
+        if (readChannel.readBoolean()) {
+            val greeting = readChannel.readString()
+            val ip = readChannel.readInt()
+
+            loginDeferred.complete(LoginResponse(true, greeting, ip, null))
+//            loginCallback.update(LoginMessage(true, greeting, ip, null))
+        } else {
+            val reason: String = readChannel.readString()
+            loginDeferred.complete(LoginResponse(false, null, null, reason))
+//            loginCallback.update(LoginMessage(false, null, null, reason))
         }
     }
 
@@ -568,6 +590,27 @@ class ServerSocket(
                 .writeInt32(1)
                 .getBuff()
         )
+    }
+
+    suspend fun loginTest(login: String, pwd: String): LoginResponse {
+        send(
+            ByteMessage()
+                .writeInt32(1)
+                .writeStr(login)
+                .writeStr(pwd)
+                .writeInt32(160)
+                .writeStr((login + pwd).toMD5())
+                .writeInt32(1)
+                .getBuff()
+        )
+
+        return try {
+            withTimeout(5000) {
+                loginDeferred.await()
+            }
+        } catch (_: TimeoutCancellationException) {
+            throw TimeoutException("Login response timed out")
+        }
     }
 
     private suspend fun setListenPort(port: Int) {

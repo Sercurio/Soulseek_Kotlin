@@ -1,4 +1,4 @@
-package fr.sercurio.soulseek
+package fr.sercurio.soulseek.client.shared
 
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.discardExact

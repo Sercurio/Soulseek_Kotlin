@@ -1,6 +1,5 @@
-package fr.sercurio.soulseek.client
+package fr.sercurio.soulseek.client.shared
 
-import fr.sercurio.soulseek.SoulInputStream
 import io.ktor.network.selector.ActorSelectorManager
 import io.ktor.network.sockets.InetSocketAddress
 import io.ktor.network.sockets.Socket

@@ -1,4 +1,4 @@
-package fr.sercurio.soulseek.entities
+package fr.sercurio.soulseek.server.entities
 
 data class RoomApiModel(
     val name: String,
