@@ -6,5 +6,5 @@ data class RoomApiModel(
     val owner: Boolean = false,
     val operated: Boolean = false,
     var nbUsers: Int = 0,
-    var roomMessageApiModels: MutableList<RoomMessageApiModel> = mutableListOf()
+    var roomMessageApiModels: MutableList<RoomMessageApiModel> = mutableListOf(),
 )

@@ -9,9 +9,7 @@ object LoginRepository {
     private var loginStatus: LoginApiModel = LoginApiModel(false, "")
 
     suspend fun setLoginStatus(loginStatus: LoginApiModel) {
-        loginStatusMutex.withLock {
-            LoginRepository.loginStatus = loginStatus
-        }
+        loginStatusMutex.withLock { LoginRepository.loginStatus = loginStatus }
     }
 
     fun getLoginStatus(): LoginApiModel {

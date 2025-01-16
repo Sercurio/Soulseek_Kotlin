@@ -9,22 +9,20 @@ import fr.sercurio.soulseek.entities.ByteMessage
 import fr.sercurio.soulseek.entities.SoulFile
 import fr.sercurio.soulseek.toInt
 import io.ktor.utils.io.ByteReadChannel
-import kotlinx.coroutines.delay
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.zip.Inflater
+import kotlinx.coroutines.delay
 
 class PeerSocket(
     host: String,
     port: Int,
-
     private val token: Int,
     val username: String,
-
     private val searchReplyCallback: ResponseCallback<SearchReplyMessage> = ResponseCallback(),
     private val transferRequestCallback: ResponseCallback<TransferRequestMessage> =
-        ResponseCallback()
+        ResponseCallback(),
 ) : AbstractSocket(host, port) {
     override suspend fun onSocketConnected() {
         println("Connected to $username")
@@ -33,11 +31,13 @@ class PeerSocket(
 
     override suspend fun whileConnected() {
         try {
-            if(readChannel.byteReadChannel.isClosedForRead.not()) {
+            if (readChannel.byteReadChannel.isClosedForRead.not()) {
 
                 readChannel.readAndSetMessageLength()
                 val code = readChannel.readInt()
-                println("PeerClient received: Message code: $code Packet Size: ${readChannel.packLeft + 4}")
+                println(
+                    "PeerClient received: Message code: $code Packet Size: ${readChannel.packLeft + 4}"
+                )
 
                 when (code) {
                     4 -> receiveSharesRequest()
@@ -200,7 +200,7 @@ class PeerSocket(
                         extension,
                         bitrate,
                         vbr,
-                        duration
+                        duration,
                     )
                 )
             }
@@ -321,10 +321,9 @@ class PeerSocket(
             val filesize = readChannel.readLong()
         } else if (!allowed) {
             println(
-                "Not Allowed:" +
-                        readChannel.readString()
+                "Not Allowed:" + readChannel.readString()
             ) /*val goSeekService: GoSeekService = this.service
-                goSeekService.pendingUploads--*/
+              goSeekService.pendingUploads--*/
         }
     }
 

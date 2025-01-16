@@ -14,7 +14,7 @@ data class PeerApiModel(
     var queueLength: Long = 0,
     var peerSocket: PeerSocket? = null,
     var transferSocket: TransferSocket? = null,
-    var soulFiles: List<SoulFile> = emptyList()
+    var soulFiles: List<SoulFile> = emptyList(),
 ) {
     override fun toString(): String {
         return "PeerApiModel(username='$username', connectionType='$connectionType', host='$host', port=$port, token=$token, slotsFree=$slotsFree, avgSpeed=$avgSpeed, queueLength=$queueLength, clientSocket=$peerSocket, transferSocket=$transferSocket, soulFiles=$soulFiles)"

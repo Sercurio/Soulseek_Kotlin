@@ -8,23 +8,15 @@ import io.ktor.network.sockets.aSocket
 import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel
 import io.ktor.utils.io.ByteWriteChannel
-import io.ktor.utils.io.close
+import java.nio.ByteBuffer
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import java.nio.ByteBuffer
 
-abstract class AbstractSocket(
-    private val host: String,
-    private val port: Int,
-) {
+abstract class AbstractSocket(private val host: String, private val port: Int) {
     private val connectedDeferred = CompletableDeferred<Boolean>()
     private val selectorManager = ActorSelectorManager(Dispatchers.IO)
     lateinit var socket: Socket
@@ -50,7 +42,7 @@ abstract class AbstractSocket(
             } catch (e: Exception) {
                 println("$e")
             } finally {
-//                    socket.close()
+                //                    socket.close()
             }
         }
     }
@@ -67,5 +59,6 @@ abstract class AbstractSocket(
     }
 
     abstract suspend fun onSocketConnected()
+
     abstract suspend fun whileConnected()
 }

@@ -1,4 +1,7 @@
-plugins { kotlin("jvm") version "2.1.0" }
+plugins {
+    val kotlinVersion = "2.1.0"
+    kotlin("jvm") version kotlinVersion
+}
 
 group = "fr.sercurio"
 
@@ -17,5 +20,7 @@ dependencies {
 
     implementation("org.apache.commons:commons-configuration2:2.11.0")
 }
+
+
 
 tasks.test { useJUnitPlatform() }

@@ -4,5 +4,5 @@ data class LoginMessage(
     val connected: Boolean,
     val greeting: String?,
     val ip: Int?,
-    val reason: String?
+    val reason: String?,
 )

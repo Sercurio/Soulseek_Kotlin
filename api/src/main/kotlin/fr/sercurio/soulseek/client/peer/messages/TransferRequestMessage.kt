@@ -4,5 +4,5 @@ data class TransferRequestMessage(
     val direction: Int,
     val token: Int,
     val path: String,
-    val size: Long
+    val size: Long,
 )

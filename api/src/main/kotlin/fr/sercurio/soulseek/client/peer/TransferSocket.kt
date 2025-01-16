@@ -6,24 +6,21 @@ import fr.sercurio.soulseek.client.peer.messages.DownloadCompleteMessage
 import fr.sercurio.soulseek.entities.ByteMessage
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import io.ktor.utils.io.readIntLittleEndian
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
 import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class TransferSocket(
     private val saveDirectory: String?,
-
     host: String,
     port: Int,
-
     val username: String,
     private val token: Int,
     private val filepath: String,
     private val filesize: Long,
-
-    val downloadCompleteCallback: ResponseCallback<DownloadCompleteMessage> = ResponseCallback()
+    val downloadCompleteCallback: ResponseCallback<DownloadCompleteMessage> = ResponseCallback(),
 ) : AbstractSocket(host, port) {
     override suspend fun onSocketConnected() {
         pierceFirewall(token)
@@ -35,7 +32,7 @@ class TransferSocket(
         val file = File(dir.path + "/" + this.filepath.substringAfterLast("/", ""))
         if (file.exists()) file.delete()
         withContext(Dispatchers.IO) {
-//            val fileOutputStream = FileOutputStream(file)
+            //            val fileOutputStream = FileOutputStream(file)
 
             val buffer = ByteArray(8192)
             var offset = 0
@@ -56,13 +53,7 @@ class TransferSocket(
             }
             val byteArray = byteArrayOutputStream.toByteArray()
 
-            downloadCompleteCallback.update(
-                DownloadCompleteMessage(
-                    username,
-                    filepath,
-                    byteArray
-                )
-            )
+            downloadCompleteCallback.update(DownloadCompleteMessage(username, filepath, byteArray))
 
             byteArrayOutputStream.close()
 
@@ -77,7 +68,6 @@ class TransferSocket(
 
     private suspend fun resumeDownload(offset: Long) =
         send(ByteMessage().writeLong(offset).getBuff())
-
 
     fun onDownloadComplete(callback: (DownloadCompleteMessage) -> Unit) {
         downloadCompleteCallback.subscribe { callback(it) }

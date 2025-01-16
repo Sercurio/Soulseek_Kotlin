@@ -28,6 +28,7 @@ pluginManagement {
         mavenCentral()
     }
 }
+
 dependencyResolutionManagement {
     /**
      * The dependencyResolutionManagement {repositories {...}}
