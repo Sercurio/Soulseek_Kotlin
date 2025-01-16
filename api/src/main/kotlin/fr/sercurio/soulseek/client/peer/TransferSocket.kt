@@ -1,9 +1,9 @@
 package fr.sercurio.soulseek.client.peer
 
-import fr.sercurio.soulseek.ResponseCallback
-import fr.sercurio.soulseek.client.AbstractSocket
+import fr.sercurio.soulseek.client.shared.ResponseCallback
+import fr.sercurio.soulseek.client.shared.AbstractSocket
 import fr.sercurio.soulseek.client.peer.messages.DownloadCompleteMessage
-import fr.sercurio.soulseek.entities.ByteMessage
+import fr.sercurio.soulseek.client.shared.model.ByteMessage
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import io.ktor.utils.io.readIntLittleEndian
 import java.io.ByteArrayOutputStream

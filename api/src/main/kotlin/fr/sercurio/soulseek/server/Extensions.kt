@@ -1,4 +1,4 @@
-package fr.sercurio.soulseek
+package fr.sercurio.soulseek.server
 
 import java.security.MessageDigest
 

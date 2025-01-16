@@ -1,13 +1,13 @@
 package fr.sercurio.soulseek.client.peer
 
-import fr.sercurio.soulseek.ResponseCallback
-import fr.sercurio.soulseek.SoulInputStream
-import fr.sercurio.soulseek.client.AbstractSocket
+import fr.sercurio.soulseek.client.shared.ResponseCallback
+import fr.sercurio.soulseek.client.shared.SoulInputStream
+import fr.sercurio.soulseek.client.shared.AbstractSocket
 import fr.sercurio.soulseek.client.peer.messages.SearchReplyMessage
 import fr.sercurio.soulseek.client.peer.messages.TransferRequestMessage
-import fr.sercurio.soulseek.entities.ByteMessage
-import fr.sercurio.soulseek.entities.SoulFile
-import fr.sercurio.soulseek.toInt
+import fr.sercurio.soulseek.client.shared.model.ByteMessage
+import fr.sercurio.soulseek.client.shared.model.SoulFile
+import fr.sercurio.soulseek.server.toInt
 import io.ktor.utils.io.ByteReadChannel
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer

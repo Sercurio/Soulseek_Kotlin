@@ -29,7 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import fr.sercurio.soulseek.entities.SoulFile
+import fr.sercurio.soulseek.client.shared.model.SoulFile
 
 data class SectionData(val headerText: String, val items: List<SoulFile>)
 

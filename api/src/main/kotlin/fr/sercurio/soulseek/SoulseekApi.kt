@@ -9,7 +9,7 @@ import fr.sercurio.soulseek.client.server.messages.ConnectToPeerMessageType.*
 import fr.sercurio.soulseek.client.server.messages.LoginMessage
 import fr.sercurio.soulseek.client.server.messages.RoomListMessage
 import fr.sercurio.soulseek.client.server.messages.SayInRoomMessage
-import fr.sercurio.soulseek.entities.SoulFile
+import fr.sercurio.soulseek.client.shared.model.SoulFile
 import kotlin.random.Random
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -136,6 +136,9 @@ class SoulseekApi(
         serverSocket.login(username, password)
     }
 
+    suspend fun loginTest(username: String, password: String) =
+        serverSocket.loginTest(username, password)
+
     suspend fun fileSearch(query: String) {
         val token = Random.nextInt(Integer.MAX_VALUE)
         fileSearches[token] = query
@@ -183,20 +186,23 @@ class SoulseekApi(
 fun main() {
     runBlocking {
         val api = SoulseekApi()
+        val loginResponse = api.loginTest("DebugApp", "DebugApp")
+        println(loginResponse.connected)
 
-        api.onLogin { if (it.connected) println("Logged sucessfully !") else println("not logged") }
-        api.onReceiveRoomList {}
-        api.onReceiveSearchReply { searchReplyMessage ->
-            launch {
-                println(
-                    "searchReply: ${searchReplyMessage.username}\n${searchReplyMessage.soulFiles.map { it.filename }}"
-                )
-                // api.queueUpload(searchReplyMessage.username, searchReplyMessage.soulFiles[0])
-            }
-        }
-        api.login("DebugApp", "DebugApp")
 
-        api.fileSearch("Shpongle")
+//        api.onLogin { if (it.connected) println("Logged sucessfully !") else println("not logged") }
+//        api.onReceiveRoomList {}
+//        api.onReceiveSearchReply { searchReplyMessage ->
+//            launch {
+//                println(
+//                    "searchReply: ${searchReplyMessage.username}\n${searchReplyMessage.soulFiles.map { it.filename }}"
+//                )
+//                // api.queueUpload(searchReplyMessage.username, searchReplyMessage.soulFiles[0])
+//            }
+//        }
+//        api.login("DebugApp", "DebugApp")
+//
+//        api.fileSearch("Shpongle")
 
         while (true) {
             delay(1000)

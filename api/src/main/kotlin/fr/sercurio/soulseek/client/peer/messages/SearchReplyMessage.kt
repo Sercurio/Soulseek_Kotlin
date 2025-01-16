@@ -1,6 +1,6 @@
 package fr.sercurio.soulseek.client.peer.messages
 
-import fr.sercurio.soulseek.entities.SoulFile
+import fr.sercurio.soulseek.client.shared.model.SoulFile
 
 data class SearchReplyMessage(
     val username: String,

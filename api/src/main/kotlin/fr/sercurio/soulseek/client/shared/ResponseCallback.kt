@@ -1,4 +1,4 @@
-package fr.sercurio.soulseek
+package fr.sercurio.soulseek.client.shared
 
 import kotlin.properties.Delegates
 

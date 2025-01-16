@@ -1,4 +1,4 @@
-package fr.sercurio.soulseek.entities
+package fr.sercurio.soulseek.client.shared.model
 
 data class SoulFile(
     var path: String,

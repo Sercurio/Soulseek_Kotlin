@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fr.sercurio.soulseek.SoulseekApi
 import fr.sercurio.soulseek.client.peer.messages.SearchReplyMessage
-import fr.sercurio.soulseek.entities.SoulFile
+import fr.sercurio.soulseek.client.shared.model.SoulFile
 import kotlinx.coroutines.launch
 
 class SearchViewModel(private val soulseekApi: SoulseekApi) :
