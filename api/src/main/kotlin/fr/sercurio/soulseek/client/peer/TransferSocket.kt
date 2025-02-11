@@ -32,8 +32,6 @@ class TransferSocket(
         val file = File(dir.path + "/" + this.filepath.substringAfterLast("/", ""))
         if (file.exists()) file.delete()
         withContext(Dispatchers.IO) {
-            //            val fileOutputStream = FileOutputStream(file)
-
             val buffer = ByteArray(8192)
             var offset = 0
             val token = readChannel.byteReadChannel.readIntLittleEndian()
@@ -45,18 +43,16 @@ class TransferSocket(
 
             while (offset < filesize) {
                 val read = dis.read(buffer, 0, buffer.size)
-                offset += read
-                if (read > 0) {
-                    offset += read
-                    byteArrayOutputStream.write(buffer, 0, read)
-                }
-            }
-            val byteArray = byteArrayOutputStream.toByteArray()
+                if (read == -1) break
 
+                byteArrayOutputStream.write(buffer, 0, read)
+                offset += read
+            }
+
+            val byteArray = byteArrayOutputStream.toByteArray()
             downloadCompleteCallback.update(DownloadCompleteMessage(username, filepath, byteArray))
 
             byteArrayOutputStream.close()
-
             println("finished download of ${file.path}")
             socket.close()
         }
