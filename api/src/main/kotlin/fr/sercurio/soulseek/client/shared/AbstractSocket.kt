@@ -26,7 +26,6 @@ abstract class AbstractSocket(private val host: String, private val port: Int) {
 
     suspend fun connect() {
         withContext(Dispatchers.IO) {
-            try {
                 socket = aSocket(selectorManager).tcp().connect(InetSocketAddress(host, port))
                 writeChannel = socket.openWriteChannel(autoFlush = true)
                 readChannel = SoulInputStream(socket.openReadChannel())
@@ -38,11 +37,6 @@ abstract class AbstractSocket(private val host: String, private val port: Int) {
                 while (isActive) {
                     whileConnected()
                 }
-            } catch (e: Exception) {
-                println("$e")
-            } finally {
-                //                    socket.close()
-            }
         }
     }
 
